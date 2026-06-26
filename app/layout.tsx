@@ -19,25 +19,27 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://nexaflow-ai.vercel.app'),
+  metadataBase: new URL('https://nexaflow-ai-kappa.vercel.app'),
   title: 'NexaFlow AI — Automate Everything. Scale Infinitely.',
   description: 'NexaFlow AI automates complex business workflows with intelligent AI agents. Boost team productivity by 10x with seamless integrations and real-time analytics.',
-  keywords: ['AI automation', 'workflow automation', 'SaaS', 'productivity', 'AI agents'],
+  keywords: ['AI automation', 'workflow automation', 'SaaS', 'productivity', 'AI agents', 'no-code automation', 'enterprise workflow automation', 'SaaS automation platform', 'AI developer tools'],
   openGraph: {
     title: 'NexaFlow AI — Automate Everything. Scale Infinitely.',
-    description: 'AI-powered workflow automation for modern teams.',
+    description: 'AI-powered workflow automation for modern teams. Transform operations and optimize developer productivity.',
     type: 'website',
-    url: 'https://nexaflow-ai.vercel.app',
+    url: 'https://nexaflow-ai-kappa.vercel.app',
     images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'NexaFlow AI' }],
     siteName: 'NexaFlow AI',
+    locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'NexaFlow AI — Automate Everything. Scale Infinitely.',
-    description: 'AI-powered workflow automation for modern teams.',
+    description: 'AI-powered workflow automation for modern teams. Transform operations and optimize developer productivity.',
     images: ['/og-image.png'],
+    creator: '@nexaflow_ai',
   },
-  alternates: { canonical: 'https://nexaflow-ai.vercel.app' },
+  alternates: { canonical: 'https://nexaflow-ai-kappa.vercel.app' },
   robots: { index: true, follow: true },
   icons: {
     icon: '/favicon.ico',
@@ -60,9 +62,56 @@ export default function RootLayout({
             '@context': 'https://schema.org',
             '@type': 'SoftwareApplication',
             name: 'NexaFlow AI',
-            description: 'AI-powered workflow automation platform',
+            description: 'NexaFlow AI automates complex business workflows with intelligent AI agents. Boost team productivity by 10x with seamless integrations and real-time analytics.',
             applicationCategory: 'BusinessApplication',
-            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+            operatingSystem: 'All',
+            url: 'https://nexaflow-ai-kappa.vercel.app',
+            logo: 'https://nexaflow-ai-kappa.vercel.app/logo.png',
+            screenshot: 'https://nexaflow-ai-kappa.vercel.app/og-image.png',
+            featureList: [
+              'AI-powered intelligent agents',
+              'Multi-currency dynamic pricing models',
+              'Real-time visual dashboard metrics',
+              'Advanced enterprise pipeline integrations',
+              'Interactive 3D bento grids and charts'
+            ],
+            offers: {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'USD',
+              lowPrice: '0',
+              highPrice: '199',
+              offerCount: '3',
+              offers: [
+                {
+                  '@type': 'Offer',
+                  name: 'Starter Plan',
+                  price: '0',
+                  priceCurrency: 'USD'
+                },
+                {
+                  '@type': 'Offer',
+                  name: 'Pro Plan',
+                  price: '49',
+                  priceCurrency: 'USD'
+                },
+                {
+                  '@type': 'Offer',
+                  name: 'Enterprise Plan',
+                  price: '199',
+                  priceCurrency: 'USD'
+                }
+              ]
+            },
+            aggregateRating: {
+              '@type': 'AggregateRating',
+              ratingValue: '4.9',
+              ratingCount: '1247'
+            },
+            creator: {
+              '@type': 'Organization',
+              name: 'NexaFlow AI Inc.',
+              url: 'https://nexaflow-ai-kappa.vercel.app'
+            }
           }) }}
         />
       </head>

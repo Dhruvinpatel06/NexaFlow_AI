@@ -24,19 +24,53 @@ export default function BentoAccordion() {
   const [isMobile, setIsMobile] = useState(false);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const hoveredIndexRef = useRef<number | null>(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 767px)');
     setIsMobile(mq.matches);
     const handler = (e: MediaQueryListEvent) => {
       setIsMobile(e.matches);
-      if (e.matches && hoveredIndexRef.current !== null) {
-        setActiveIndex(hoveredIndexRef.current);
-      }
+      if (e.matches && hoveredIndexRef.current !== null) setActiveIndex(hoveredIndexRef.current);
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
+
+  // Fix #14: reveal on scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => { entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  // Spotlight + 3D Mouse-Tracking Tilt (±9deg)
+  const handleMouseMoveCard = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    const r = el.getBoundingClientRect();
+    const x = e.clientX - r.left;
+    const y = e.clientY - r.top;
+    el.style.setProperty('--mouse-x', `${x}px`);
+    el.style.setProperty('--mouse-y', `${y}px`);
+    const rotX = ((x / r.width - 0.5) * 18); // ±9deg
+    const rotY = ((y / r.height - 0.5) * -18);
+    el.style.transform = `perspective(800px) rotateX(${rotY}deg) rotateY(${rotX}deg) translateZ(12px) scale(1.02)`;
+    el.style.boxShadow = `
+      ${-rotX * 1.5}px ${rotY * 1.5}px 32px rgba(255,200,1,0.18),
+      0 25px 50px rgba(0,0,0,0.15)
+    `;
+    el.style.transition = 'none';
+  };
+
+  const handleMouseLeaveCard = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    el.style.transform = 'perspective(800px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
+    el.style.transition = 'transform 500ms ease-out, box-shadow 500ms ease-out';
+    el.style.boxShadow = '';
+  };
 
   return (
     <section
@@ -46,41 +80,36 @@ export default function BentoAccordion() {
       style={{
         backgroundColor: 'var(--bg)',
         backgroundImage: `
-          radial-gradient(ellipse 60% 40% at 20% 50%, rgba(255,200,1,0.06) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 40% at 80% 30%, rgba(17,76,90,0.05) 0%, transparent 60%)
+          radial-gradient(ellipse 80% 60% at 10% 20%, rgba(255,200,1,0.07) 0%, transparent 50%),
+          radial-gradient(ellipse 60% 80% at 90% 80%, rgba(17,76,90,0.09) 0%, transparent 50%),
+          radial-gradient(circle, rgba(17,76,90,0.04) 1px, transparent 1px)
         `,
+        backgroundSize: 'auto, auto, 24px 24px',
       }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div ref={sectionRef} className="max-w-7xl mx-auto reveal">
         <div className="text-center mb-16">
-          {/* FIX 2 — Pill badge eyebrow */}
+          {/* Eyebrow Label Upgrade */}
           <div className="flex justify-center mb-4">
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 16px',
-                borderRadius: '9999px',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                fontFamily: 'Inter, sans-serif',
-                color: 'var(--dark)',
-                background: 'linear-gradient(135deg, rgba(255,200,1,0.18), rgba(255,154,50,0.1))',
-                border: '1px solid rgba(255,200,1,0.35)',
-                boxShadow: '0 2px 12px rgba(255,200,1,0.15)',
+            <span 
+              style={{ 
+                display: 'inline-block', 
+                paddingBottom: '4px', 
+                borderBottom: '3px solid var(--primary)', 
+                fontSize: '0.65rem', 
+                fontWeight: 700, 
+                letterSpacing: '0.15em', 
+                textTransform: 'uppercase', 
+                color: 'var(--dark)' 
               }}
             >
-              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--primary)', display: 'inline-block', boxShadow: '0 0 6px var(--primary)' }} />
               Platform Capabilities
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text)', fontFamily: 'JetBrains Mono' }}>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
             Powerful <span className="gradient-text">Features</span>
           </h2>
-          <p className="text-lg" style={{ color: 'var(--muted)' }}>Everything you need to automate and scale your business</p>
+          <p className="text-lg" style={{ color: 'var(--muted)', opacity: 0.7 }}>Everything you need to automate and scale your business</p>
         </div>
 
         {/* Desktop Bento Grid */}
@@ -92,165 +121,161 @@ export default function BentoAccordion() {
             return (
               <div
                 key={idx}
-                className={`cursor-pointer ${isSpanned ? 'col-span-2 row-span-2' : ''} ${isActive ? 'bento-card-active' : ''}`}
+                className={`cursor-pointer ${isSpanned ? 'col-span-2 row-span-2' : ''} card-depth spotlight-card`}
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveIndex(isActive ? null : idx); } }}
                 style={{
+                  // Glassmorphism base + Active gradient overlay
                   background: isActive
-                    ? 'linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(255,200,1,0.04) 100%)'
-                    : 'rgba(255,255,255,0.8)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  border: isActive
-                    ? '1px solid rgba(255,200,1,0.5)'
-                    : '1px solid rgba(255,255,255,0.9)',
-                  borderRadius: '24px',
-                  padding: '2rem',
-                  transition: 'all 220ms ease-out',
+                    ? 'linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,200,1,0.04))'
+                    : 'rgba(255,255,255,0.75)',
+                  backdropFilter: 'blur(12px)',
+                  WebkitBackdropFilter: 'blur(12px)',
+                  border: isActive 
+                    ? '1px solid rgba(255,200,1,0.6)' 
+                     : '1px solid rgba(255,200,1,0.15)',
                   boxShadow: isActive
-                    ? '0 0 0 1px rgba(255,200,1,0.3), 0 24px 48px rgba(255,200,1,0.14), 0 8px 16px rgba(0,0,0,0.06)'
-                    : '0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04)',
-                  transform: isActive ? 'translateY(-6px) scale(1.01)' : 'translateY(0) scale(1)',
-                  position: 'relative',
+                    ? '0 1px 0 rgba(255,255,255,0.8) inset, 0 8px 32px rgba(255,200,1,0.15), 0 4px 12px rgba(0,0,0,0.08)'
+                    : '0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 16px rgba(17,76,90,0.08), 0 1px 3px rgba(0,0,0,0.04)',
+                  borderRadius: '24px', 
+                  padding: '2rem',
+                  position: 'relative', 
                   overflow: 'hidden',
-                  minHeight: isSpanned ? '260px' : 'auto',
+                  minHeight: isSpanned ? '350px' : 'auto',
+                  transformStyle: 'preserve-3d', 
+                  willChange: 'transform',
+                  transition: 'transform 100ms ease-out, border-color 220ms ease-out, background-color 220ms ease-out, box-shadow 220ms ease-out',
                 }}
                 onMouseEnter={() => { hoveredIndexRef.current = idx; setActiveIndex(idx); }}
-                onMouseLeave={() => { hoveredIndexRef.current = null; setActiveIndex(null); }}
+                onMouseMove={handleMouseMoveCard}
+                onMouseLeave={(e) => { hoveredIndexRef.current = null; setActiveIndex(null); handleMouseLeaveCard(e); }}
               >
-                {/* Top shimmer line — 3D depth effect */}
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: '10%',
-                    right: '10%',
-                    height: '1px',
-                    background: 'linear-gradient(90deg, transparent, rgba(255,200,1,0.6), transparent)',
-                    opacity: isActive ? 1 : 0.3,
-                    transition: 'opacity 220ms ease-out',
-                    borderRadius: '9999px',
-                  }}
-                />
+                {/* Top shimmer line */}
+                <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,200,1,0.6), transparent)', opacity: isActive ? 1 : 0.3, transition: 'opacity 220ms ease-out', borderRadius: '9999px' }} />
                 <div className="flex items-start gap-4 mb-3">
-                  {/* FIX 3 — 3D glowing icon container */}
+                  {/* Issue 4D: Icon with translateZ(24px) for 3D float */}
                   <div
-                    className="flex items-center justify-center flex-shrink-0"
+                    className="flex items-center justify-center flex-shrink-0 animate-fade-in"
                     style={{
-                      width: '56px',
-                      height: '56px',
-                      borderRadius: '16px',
-                      background: `linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)`,
+                      width: '56px', height: '56px', borderRadius: '16px',
+                      background: 'linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)',
                       border: '1px solid rgba(255,200,1,0.3)',
-                      boxShadow: `
-                        0 4px 16px rgba(255,200,1,0.2),
-                        inset 0 1px 0 rgba(255,255,255,0.6),
-                        inset 0 -1px 0 rgba(0,0,0,0.05)
-                      `,
-                      transform: isActive ? 'scale(1.08) rotateZ(4deg)' : 'scale(1) rotateZ(0deg)',
+                      boxShadow: '0 4px 16px rgba(255,200,1,0.2), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                      transform: isActive ? 'scale(1.08) rotateZ(4deg) translateZ(24px)' : 'scale(1) rotateZ(0deg) translateZ(24px)',
                       transition: 'transform 200ms ease-out, box-shadow 200ms ease-out',
                     }}
                   >
                     <Icon color={isActive ? feature.color : 'var(--dark)'} size={26} />
                   </div>
                   <div>
-                    {/* FIX 6 — Gradient title on active */}
                     <h3
                       className="text-xl font-bold"
                       style={isActive ? {
-                        fontFamily: 'JetBrains Mono',
-                        background: `linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%)`,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                        backgroundClip: 'text',
-                        fontSize: '1.2rem',
-                        fontWeight: 700,
-                      } : {
-                        color: 'var(--text)',
-                        fontFamily: 'JetBrains Mono',
-                        fontSize: '1.2rem',
-                        fontWeight: 700,
-                      }}
+                        fontFamily: 'var(--font-mono)',
+                        background: 'linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%)',
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                        fontSize: '1.2rem', fontWeight: 700,
+                      } : { color: 'var(--text)', fontFamily: 'var(--font-mono)', fontSize: '1.2rem', fontWeight: 700 }}
                     >
                       {feature.title}
                     </h3>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 500, fontFamily: 'Inter, sans-serif', background: 'rgba(255,200,1,0.1)', border: '1px solid rgba(255,200,1,0.25)', color: 'var(--dark)', marginTop: '4px' }}>
+                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 500, fontFamily: 'var(--font-sans)', background: 'rgba(255,200,1,0.1)', border: '1px solid rgba(255,200,1,0.25)', color: 'var(--dark)', marginTop: '4px' }}>
                       {feature.tag}
                     </span>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.6)' }}>
-                  {feature.description}
-                </p>
-                {/* FIX 5 — Large Data Insights card (idx===2): 3D bar chart + upgraded sparkline */}
+                {/* Body description opacity 0.7 */}
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.7)' }}>{feature.description}</p>
+                
+                {/* Large Data Insights card (idx===2): 3D bar chart & Issue 4F: Drawing SVG line */}
                 {isSpanned && (
-                  <>
-                    {/* 3D Bar Chart Visual */}
-                    <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '1.5rem',
-                        right: '1.5rem',
-                        display: 'flex',
-                        alignItems: 'flex-end',
-                        gap: '6px',
-                        opacity: isActive ? 0.85 : 0.35,
-                        transition: 'opacity 300ms ease-out',
-                      }}
-                    >
-                      {[45, 70, 55, 90, 65, 80, 50].map((h, i) => (
-                        <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                          {/* Bar top face (3D effect) */}
-                          <div
-                            style={{
-                              width: '18px',
-                              height: '4px',
-                              background: `linear-gradient(90deg, rgba(255,200,1,0.9), rgba(255,154,50,0.7))`,
-                              borderRadius: '2px 2px 0 0',
-                              transform: 'skewX(-20deg)',
-                              marginBottom: '-2px',
-                              zIndex: 1,
-                            }}
-                          />
-                          {/* Bar body */}
-                          <div
-                            style={{
-                              width: '18px',
-                              height: `${h * 0.7}px`,
-                              background: i % 2 === 0
-                                ? 'linear-gradient(180deg, rgba(255,200,1,0.7) 0%, rgba(255,200,1,0.3) 100%)'
-                                : 'linear-gradient(180deg, rgba(17,76,90,0.5) 0%, rgba(17,76,90,0.2) 100%)',
-                              borderRadius: '3px 3px 0 0',
-                              transition: `height 600ms ease-out ${i * 80}ms`,
-                            }}
-                          />
-                        </div>
-                      ))}
+                  <div 
+                    className="grid grid-cols-3 gap-6 mt-6 items-center"
+                    style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }}
+                  >
+                    {/* Left Column: Stat Badges (1/3 width) */}
+                    <div className="col-span-1 flex flex-col gap-3">
+                      <div className="glass-card" style={{ border: '1px solid rgba(255,200,1,0.25)', borderRadius: '12px', padding: '10px 14px', background: 'rgba(255,255,255,0.75)', transform: 'translateZ(25px)' }}>
+                        <p style={{ fontSize: '0.55rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, fontWeight: 700 }}>Accuracy Rate</p>
+                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>99.98% <span style={{ fontSize: '0.65rem', color: '#22c55e' }}>↑</span></p>
+                      </div>
+                      
+                      <div className="glass-card" style={{ border: '1px solid rgba(17,76,90,0.12)', borderRadius: '12px', padding: '10px 14px', background: 'rgba(255,255,255,0.75)', transform: 'translateZ(25px)' }}>
+                        <p style={{ fontSize: '0.55rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, fontWeight: 700 }}>Latency Speed</p>
+                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>14.2ms <span style={{ fontSize: '0.65rem', color: 'var(--primary)' }}>⚡</span></p>
+                      </div>
                     </div>
-                    {/* Upgraded sparkline SVG */}
-                    <svg
-                      style={{ position: 'absolute', bottom: '1.5rem', left: '2rem', opacity: isActive ? 0.15 : 0.07, transition: 'opacity 300ms ease-out', pointerEvents: 'none' }}
-                      width="120" height="40" viewBox="0 0 120 40"
-                    >
-                      <polyline points="0,36 20,28 40,32 60,14 80,20 100,8 120,4" fill="none" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <polyline points="0,36 20,28 40,32 60,14 80,20 100,8 120,4" fill="url(#chartFill)" strokeWidth="0" />
-                      <defs>
-                        <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.3} />
-                          <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                  </>
+
+                    {/* Right Column: Chart & SVG (2/3 width) */}
+                    <div className="col-span-2 relative w-full h-[130px] rounded-xl p-4 overflow-hidden border border-dashed border-[rgba(17,76,90,0.15)] bg-[rgba(255,255,255,0.3)]" style={{ transformStyle: 'preserve-3d', transform: 'translateZ(25px)' }}>
+                      {/* Grid overlay */}
+                      <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.1, pointerEvents: 'none' }}>
+                        <line x1="0" y1="30" x2="100%" y2="30" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
+                        <line x1="0" y1="65" x2="100%" y2="65" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
+                        <line x1="0" y1="100" x2="100%" y2="100%" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
+                      </svg>
+
+                      {/* Line chart SVG */}
+                      <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 130" preserveAspectRatio="none" style={{ pointerEvents: 'none', transform: 'translateZ(30px)' }}>
+                        <defs>
+                          <linearGradient id="primaryChartFill" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.3" />
+                            <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
+                          </linearGradient>
+                        </defs>
+                        
+                        {/* Shimmer gradient fill */}
+                        <path 
+                          d="M0,130 L0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30 L300,130 Z" 
+                          fill="url(#primaryChartFill)" 
+                          style={{ opacity: isActive ? 1 : 0.5, transition: 'opacity 300ms' }}
+                        />
+                        
+                        {/* Main line */}
+                        <path 
+                          d="M0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30" 
+                          fill="none" 
+                          stroke="var(--primary)" 
+                          strokeWidth="2.5" 
+                          strokeLinecap="round"
+                          style={{
+                            strokeDasharray: '400',
+                            strokeDashoffset: isActive ? '0' : '400',
+                            transition: 'stroke-dashoffset 1.5s ease-out',
+                          }}
+                        />
+
+                        {/* Node circle */}
+                        {isActive && (
+                          <circle cx="160" cy="20" r="4" fill="var(--warm)" style={{ filter: 'drop-shadow(0 0 6px var(--warm))' }}>
+                            <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+                          </circle>
+                        )}
+                      </svg>
+
+                      {/* Small Live stats overlay */}
+                      <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(255,255,255,0.9)] border border-[rgba(255,200,1,0.25)] text-[0.55rem] font-bold text-[var(--dark)]" style={{ transform: 'translateZ(35px)' }}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
+                        ANALYTICS: LIVE
+                      </div>
+
+                      {/* Small bar indicators in corner */}
+                      <div className="absolute bottom-2 right-2 flex items-end gap-1" style={{ opacity: isActive ? 0.85 : 0.4, transition: 'opacity 300ms', transform: 'translateZ(30px)' }}>
+                        {[30, 45, 60, 40].map((barHeight, idx) => (
+                          <div key={idx} style={{ width: '4px', height: `${barHeight * 0.4}px`, backgroundColor: idx % 2 === 0 ? 'var(--primary)' : 'var(--warm)', borderRadius: '1px' }} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 )}
-                {/* FIX 7 — Platform Connections card (idx===5): connection dots */}
+                {/* Platform Connections card (idx===5): connection dots */}
                 {idx === 5 && (
                   <div style={{ position: 'absolute', bottom: '1.2rem', right: '1.5rem', opacity: isActive ? 0.7 : 0.2, transition: 'opacity 300ms ease-out' }}>
                     <svg width="72" height="48" viewBox="0 0 72 48">
-                      {/* Connection lines */}
                       <line x1="12" y1="24" x2="36" y2="12" stroke="var(--primary)" strokeWidth="1.5" strokeDasharray="3,3" />
                       <line x1="12" y1="24" x2="36" y2="36" stroke="var(--primary)" strokeWidth="1.5" strokeDasharray="3,3" />
                       <line x1="36" y1="12" x2="60" y2="20" stroke="var(--warm)" strokeWidth="1.5" strokeDasharray="3,3" />
                       <line x1="36" y1="36" x2="60" y2="28" stroke="var(--warm)" strokeWidth="1.5" strokeDasharray="3,3" />
-                      {/* Nodes */}
                       <circle cx="12" cy="24" r="5" fill="var(--primary)" opacity="0.8" />
                       <circle cx="36" cy="12" r="4" fill="var(--dark)" opacity="0.6" />
                       <circle cx="36" cy="36" r="4" fill="var(--dark)" opacity="0.6" />
@@ -288,40 +313,15 @@ export default function BentoAccordion() {
                   style={{ backgroundColor: 'transparent' }}
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    {/* FIX 3 — 3D glowing icon container (mobile) */}
-                    <div
-                      className="flex items-center justify-center flex-shrink-0"
-                      style={{
-                        width: '56px',
-                        height: '56px',
-                        borderRadius: '16px',
-                        background: `linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)`,
-                        border: '1px solid rgba(255,200,1,0.3)',
-                        boxShadow: `
-                          0 4px 16px rgba(255,200,1,0.2),
-                          inset 0 1px 0 rgba(255,255,255,0.6),
-                          inset 0 -1px 0 rgba(0,0,0,0.05)
-                        `,
-                        transform: isActive ? 'scale(1.08) rotateZ(4deg)' : 'scale(1) rotateZ(0deg)',
-                        transition: 'transform 200ms ease-out, box-shadow 200ms ease-out',
-                      }}
-                    >
+                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)', border: '1px solid rgba(255,200,1,0.3)', boxShadow: '0 4px 16px rgba(255,200,1,0.2), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.05)', transform: isActive ? 'scale(1.08) rotateZ(4deg)' : 'scale(1) rotateZ(0deg)', transition: 'transform 200ms ease-out, box-shadow 200ms ease-out' }}>
                       <Icon color={isActive ? feature.color : 'var(--dark)'} size={26} />
                     </div>
-                    <h3 className="text-lg font-bold text-left" style={{ color: isActive ? feature.color : 'var(--text)', fontFamily: 'JetBrains Mono' }}>
-                      {feature.title}
-                    </h3>
+                    <h3 className="text-lg font-bold text-left" style={{ color: isActive ? feature.color : 'var(--text)', fontFamily: 'var(--font-mono)' }}>{feature.title}</h3>
                   </div>
                   {isActive ? <ChevronUpSolid color={feature.color} size={20} /> : <ChevronDown color="var(--muted)" size={20} />}
                 </button>
-                <div
-                  style={{
-                    maxHeight: isActive ? `${contentRefs.current[idx]?.scrollHeight ?? 200}px` : '0px',
-                    overflow: 'hidden',
-                    transition: 'max-height 350ms ease-in-out',
-                  }}
-                >
-                  <div ref={(el) => { contentRefs.current[idx] = el; }} className="px-6 pb-4 text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.6)' }}>
+                <div style={{ maxHeight: isActive ? `${contentRefs.current[idx]?.scrollHeight ?? 200}px` : '0px', overflow: 'hidden', transition: 'max-height 350ms ease-in-out' }}>
+                  <div ref={(el) => { contentRefs.current[idx] = el; }} className="px-6 pb-4 text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.7)' }}>
                     {feature.description}
                   </div>
                 </div>

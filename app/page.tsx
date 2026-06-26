@@ -1,4 +1,3 @@
-'use client';
 
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
@@ -8,15 +7,20 @@ import Pricing from '@/components/Pricing';
 import Testimonials from '@/components/Testimonials';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import ScrollProgress from '@/components/ScrollProgress';
+import { PricingProvider } from '@/lib/pricingContext';
 
 export default function LandingPage() {
   return (
-    <main style={{ backgroundColor: 'var(--bg)' }}>
+    <main role="main" style={{ backgroundColor: 'var(--bg)' }}>
+      <ScrollProgress />
       <Navbar />
       <Hero />
       <StatsBar />
       <BentoAccordion />
-      <Pricing />
+      <PricingProvider>
+        <Pricing />
+      </PricingProvider>
       <Testimonials />
       <Footer />
       <ScrollToTop />

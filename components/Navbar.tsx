@@ -7,6 +7,8 @@ import { XMark } from './icons/XMark';
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -15,19 +17,61 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Dark mode: read from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('nexaflow-theme');
+    if (saved === 'dark') {
+      setIsDark(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleDark = () => {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('nexaflow-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('nexaflow-theme', 'light');
+    }
+  };
+
+  // Close search on Escape
+  useEffect(() => {
+    if (!isSearchOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsSearchOpen(false); };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isSearchOpen]);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileMenuOpen(false);
+  };
+
+  const linkColor = isDark ? 'white' : (scrolled ? 'var(--dark)' : 'white');
+  const navBgColor = scrolled
+    ? (isDark ? 'rgba(23,43,54,0.96)' : 'rgba(241,246,244,0.92)')
+    : (isDark ? 'rgba(17,76,90,0.15)' : 'rgba(23,43,54,0.0)');
+  const uiColor = isDark ? 'white' : (scrolled ? 'var(--text)' : 'white');
+
   return (
     <>
       <nav
-        className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-300 ease-out"
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out"
         style={{
-          backgroundColor: scrolled ? 'rgba(241,245,244,0.92)' : 'rgba(23,43,54,0.0)',
-          borderBottom: scrolled ? '1px solid rgba(255,200,1,0.25)' : '1px solid transparent',
+          backgroundColor: navBgColor,
+          borderBottom: scrolled ? (isDark ? '1px solid rgba(255,200,1,0.15)' : '1px solid rgba(255,200,1,0.25)') : '1px solid transparent',
           boxShadow: scrolled ? '0 4px 24px rgba(17,76,90,0.08)' : 'none',
+          backdropFilter: scrolled ? 'blur(12px)' : (isDark ? 'blur(20px)' : 'none'),
+          WebkitBackdropFilter: scrolled ? 'blur(12px)' : (isDark ? 'blur(20px)' : 'none'),
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('hero')}>
             <div style={{ position: 'relative', width: 10, height: 10, flexShrink: 0 }}>
               <div style={{
                 width: 10, height: 10, borderRadius: '50%',
@@ -36,48 +80,55 @@ export default function Navbar() {
                 animation: 'pulse-glow 2s ease-in-out infinite',
               }} />
             </div>
-            <span className="font-bold text-lg" style={{ color: 'var(--primary)', fontFamily: 'JetBrains Mono' }}>
+            <span className="font-bold text-lg" style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
               NexaFlow
             </span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#platform" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
+            <a href="#platform" onClick={(e) => { e.preventDefault(); scrollTo('platform'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
               Platform
             </a>
-            <a href="#features" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
+            <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
               Features
             </a>
-            <a href="#pricing" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
+            <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollTo('pricing'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
               Pricing
             </a>
-            <a href="#about" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
+            <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
               About
             </a>
           </div>
 
           {/* Right Section */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+            {/* Search */}
             <button
               className="p-2 rounded-lg hover:opacity-70 transition-opacity"
               aria-label="Search"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
-              <Search color="var(--text)" size={20} />
+              <Search color={uiColor} size={20} />
             </button>
+
+            {/* Dark mode toggle */}
             <button
-              className="btn-shimmer hidden md:inline-block font-semibold text-sm hover:-translate-y-px transition-transform"
-              style={{
-                color: 'var(--surface)',
-                borderRadius: '10px',
-                padding: '10px 24px',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(17,76,90,0.25), 0 0 0 2px rgba(255,200,1,0.3)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-              }}
+              className="p-2 rounded-lg hover:opacity-70 transition-all duration-200"
+              aria-label="Toggle dark mode"
+              onClick={toggleDark}
+              style={{ fontSize: '1.1rem' }}
+            >
+              <span style={{ display: 'inline-block', transition: 'transform 200ms ease-out', transform: isDark ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                {isDark ? '☀️' : '🌙'}
+              </span>
+            </button>
+
+            {/* Get Started CTA */}
+            <button
+              className="btn-premium-primary hidden md:inline-block"
+              style={{ padding: '10px 24px' }}
+              onClick={() => scrollTo('pricing')}
             >
               Get Started
             </button>
@@ -89,12 +140,12 @@ export default function Navbar() {
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <XMark color="var(--text)" size={24} />
+                <XMark color={uiColor} size={24} />
               ) : (
                 <div className="w-6 h-5 flex flex-col justify-center gap-1">
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: 'var(--text)' }} />
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: 'var(--text)' }} />
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: 'var(--text)' }} />
+                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
+                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
+                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
                 </div>
               )}
             </button>
@@ -102,7 +153,23 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Overlay */}
+      {/* Search Bar Dropdown — Fix #20 */}
+      {isSearchOpen && (
+        <div
+          className="fixed top-16 left-0 right-0 z-40 px-6 py-3"
+          style={{ backgroundColor: 'var(--bg)', borderBottom: '1px solid rgba(255,200,1,0.2)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}
+        >
+          <input
+            autoFocus
+            placeholder="Search features, pricing, docs..."
+            className="w-full max-w-2xl mx-auto block px-4 py-2 rounded-xl"
+            style={{ background: 'white', border: '2px solid var(--primary)', outline: 'none', color: 'var(--text)' }}
+            onKeyDown={(e) => e.key === 'Escape' && setIsSearchOpen(false)}
+          />
+        </div>
+      )}
+
+      {/* Mobile Menu Overlay — Fix #15: close on link click */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 top-16 z-40 backdrop-blur-sm md:hidden"
@@ -114,24 +181,13 @@ export default function Navbar() {
             onClick={(e) => e.stopPropagation()}
             style={{ borderColor: 'var(--primary)' }}
           >
-            <a href="#platform" className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-              Platform
-            </a>
-            <a href="#features" className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-              Features
-            </a>
-            <a href="#pricing" className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-              Pricing
-            </a>
-            <a href="#about" className="text-sm font-medium" style={{ color: 'var(--text)' }}>
-              About
-            </a>
+            <a href="#platform" onClick={(e) => { e.preventDefault(); scrollTo('platform'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Platform</a>
+            <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Features</a>
+            <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollTo('pricing'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Pricing</a>
+            <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>About</a>
             <button
-              className="btn-shimmer px-4 py-2 rounded-lg font-semibold text-sm w-full"
-              style={{
-                color: 'var(--surface)',
-                borderRadius: '10px',
-              }}
+              className="btn-premium-primary px-4 py-2 w-full"
+              onClick={() => scrollTo('pricing')}
             >
               Get Started
             </button>

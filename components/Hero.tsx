@@ -1,8 +1,37 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-const TRUST_COMPANIES = ['Stripe', 'Notion', 'Figma', 'Linear', 'Vercel', 'Slack'];
+// Upgraded counter with tick-up animation on mount
+function MockupCounter({ target, suffix = '', decimals = 0, duration = 1500 }: { target: number; suffix?: string; decimals?: number; duration?: number }) {
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    const startTime = performance.now();
+    let aniFrame: number;
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = progress * (2 - progress); // easeOutQuad
+      setVal(easeProgress * target);
+      if (progress < 1) {
+        aniFrame = requestAnimationFrame(animate);
+      } else {
+        setVal(target);
+      }
+    };
+    aniFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(aniFrame);
+  }, [target, duration]);
+
+  const formatted = decimals > 0 
+    ? val.toFixed(decimals)
+    : Math.floor(val).toLocaleString();
+
+  return (
+    <span>{formatted}{suffix}</span>
+  );
+}
 
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
@@ -10,6 +39,26 @@ export default function Hero() {
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctasRef = useRef<HTMLDivElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
+  const handleMouseMoveMockup = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -8; // ±8deg
+    const rotateY = ((x - centerX) / centerX) * 8; // ±8deg
+    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+    card.style.transition = 'none';
+  };
+
+  const handleMouseLeaveMockup = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget;
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+    card.style.transition = 'transform 400ms ease-out';
+  };
 
   useEffect(() => {
     const elements = [
@@ -19,7 +68,6 @@ export default function Hero() {
       { ref: ctasRef, delay: 320 },
       { ref: mockupRef, delay: 400 },
     ];
-
     elements.forEach(({ ref, delay }) => {
       if (ref.current) {
         ref.current.style.animation = `fade-up 500ms ease-out ${delay}ms forwards`;
@@ -28,12 +76,11 @@ export default function Hero() {
     });
   }, []);
 
-  const marqueeItems = [...TRUST_COMPANIES, ...TRUST_COMPANIES];
-
   return (
     <section
+      id="hero"
       aria-label="Hero"
-      className="hero-bg relative w-full py-24 md:py-32 overflow-hidden"
+      className="hero-bg noise-overlay relative w-full py-24 md:py-32 overflow-hidden"
       style={{
         backgroundColor: 'var(--surface)',
         backgroundImage: `
@@ -43,7 +90,30 @@ export default function Hero() {
         `,
       }}
     >
-      <div className="hero-content max-w-7xl mx-auto px-4 md:px-8">
+      {/* Premium Upgrades: 3 drifting background orbs */}
+      <div 
+        style={{
+          position: 'absolute', width: '600px', height: '600px', top: '-200px', left: '-150px',
+          background: 'radial-gradient(circle, rgba(255,200,1,0.12) 0%, transparent 70%)',
+          animation: 'orb-drift 12s ease-in-out infinite', pointerEvents: 'none', zIndex: 0
+        }} 
+      />
+      <div 
+        style={{
+          position: 'absolute', width: '500px', height: '500px', top: '100px', right: '-100px',
+          background: 'radial-gradient(circle, rgba(17,76,90,0.25) 0%, transparent 70%)',
+          animation: 'orb-drift 16s ease-in-out infinite reverse', pointerEvents: 'none', zIndex: 0
+        }} 
+      />
+      <div 
+        style={{
+          position: 'absolute', width: '400px', height: '400px', bottom: '-100px', left: '30%',
+          background: 'radial-gradient(circle, rgba(255,153,50,0.08) 0%, transparent 70%)',
+          animation: 'orb-drift 20s ease-in-out infinite', pointerEvents: 'none', zIndex: 0
+        }} 
+      />
+
+      <div className="hero-content relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
           {/* Left Column */}
           <div className="md:col-span-3 space-y-8">
@@ -51,20 +121,9 @@ export default function Hero() {
             <div
               ref={badgeRef}
               className="badge-shimmer inline-flex items-center gap-2 px-4 py-2 rounded-full relative"
-              style={{
-                backgroundColor: 'rgba(255, 200, 1, 0.08)',
-                border: '1px solid rgba(255, 200, 1, 0.4)',
-              }}
+              style={{ backgroundColor: 'rgba(255, 200, 1, 0.08)', border: '1px solid rgba(255, 200, 1, 0.4)' }}
             >
-              <div
-                style={{
-                  width: 4, height: 4, borderRadius: '50%',
-                  backgroundColor: 'var(--primary)',
-                  boxShadow: '0 0 6px var(--primary)',
-                  animation: 'pulse-glow 2s ease-in-out infinite',
-                  flexShrink: 0,
-                }}
-              />
+              <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: 'var(--primary)', boxShadow: '0 0 6px var(--primary)', animation: 'pulse-glow 2s ease-in-out infinite', flexShrink: 0 }} />
               <span style={{ color: 'var(--primary)' }} className="text-sm font-medium relative z-10">
                 ✦ AI-Powered Automation — Now in Public Beta
               </span>
@@ -73,46 +132,33 @@ export default function Hero() {
             {/* H1 */}
             <h1
               ref={titleRef}
-              className="leading-tight"
-              style={{
-                fontFamily: 'JetBrains Mono',
-                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-                letterSpacing: '-0.03em',
-              }}
+              className="leading-tight animate-fade-in"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', letterSpacing: '-0.03em' }}
             >
-              <span className="block text-white font-black" style={{ fontWeight: 900 }}>
-                Automate Everything.
-              </span>
+              <span className="block text-white font-black" style={{ fontWeight: 900 }}>Automate Everything.</span>
               <span
                 className="block font-black"
                 style={{
                   fontWeight: 900,
-                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9A32 50%, #FFC801 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  backgroundSize: '200% auto',
-                  animation: 'shimmer 4s linear infinite',
+                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9932 50%, #FFC801 100%)',
+                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+                  backgroundSize: '200% auto', animation: 'shimmer 4s linear infinite',
                 }}
               >
                 Scale Infinitely.
               </span>
             </h1>
 
-            {/* Subheading */}
+            {/* Subheading — Opacity 0.75 for readability */}
             <p
               ref={subtitleRef}
               className="max-w-lg"
               style={{
-                fontSize: '1.125rem',
-                lineHeight: 1.7,
-                borderLeft: '3px solid var(--primary)',
-                paddingLeft: '16px',
+                fontSize: '1.125rem', lineHeight: 1.7,
+                borderLeft: '3px solid var(--primary)', paddingLeft: '16px',
                 background: 'linear-gradient(90deg, rgba(255,200,1,0.06) 0%, transparent 100%)',
-                borderRadius: '0 6px 6px 0',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-                color: 'rgba(255, 255, 255, 0.65)',
+                borderRadius: '0 6px 6px 0', paddingTop: '8px', paddingBottom: '8px',
+                color: 'rgba(255, 255, 255, 0.75)',
               }}
             >
               Transform your workflow with intelligent AI agents. Boost productivity by 10x with seamless integrations and real-time insights.
@@ -121,113 +167,83 @@ export default function Hero() {
             {/* CTA Buttons */}
             <div ref={ctasRef} className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
-                className="btn-shimmer font-semibold hover:-translate-y-0.5 transition-all duration-200 ease-out"
-                style={{
-                  padding: '14px 32px',
-                  borderRadius: '12px',
-                  fontSize: '1rem',
-                  fontWeight: 600,
-                  color: 'var(--surface)',
-                  boxShadow: '0 4px 20px rgba(255,200,1,0.35)',
-                  border: '1px solid rgba(255,200,1,0.4)',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(255,200,1,0.5), 0 0 0 2px rgba(255,200,1,0.2)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(255,200,1,0.35)';
-                }}
+                className="btn-premium-primary font-semibold"
+                style={{ padding: '14px 32px' }}
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Start Free Trial
               </button>
 
               <button
-                className="font-semibold hover:-translate-y-0.5 transition-all duration-200 ease-out"
-                style={{
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  backdropFilter: 'blur(8px)',
-                  WebkitBackdropFilter: 'blur(8px)',
-                  color: 'white',
-                  padding: '14px 32px',
-                  borderRadius: '12px',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 200, 1, 0.5)';
-                  e.currentTarget.style.background = 'rgba(255, 200, 1, 0.08)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                  e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)';
-                }}
+                className="btn-premium-outline font-semibold"
+                style={{ padding: '14px 32px' }}
+                onClick={() => setShowDemoModal(true)}
               >
                 Watch Demo →
               </button>
             </div>
-
-            {/* Trust Marquee */}
-            <div className="pt-8 space-y-3 overflow-hidden">
-              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '0.75rem' }}>
-                Trusted by teams at
-              </p>
-              <div className="overflow-hidden">
-                <div className="trust-marquee-track">
-                  {marqueeItems.map((company, idx) => (
-                    <span
-                      key={idx}
-                      style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.45, fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '0.875rem', color: 'white' }}
-                    >
-                      <span style={{ width: 5, height: 5, borderRadius: 1, backgroundColor: idx % 2 === 0 ? 'var(--primary)' : 'var(--warm)', opacity: 0.7, flexShrink: 0 }} />
-                      {company}
-                      {idx < marqueeItems.length - 1 && <span style={{ margin: '0 12px', opacity: 0.3 }}>·</span>}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column - Floating Mockup */}
+          {/* Right Column - Premium Glassmorphism Floating Mockup */}
           <div ref={mockupRef} className="md:col-span-2 relative h-96 md:h-full hidden md:block">
             <div
               className="rounded-2xl p-[1px] w-full max-w-sm mx-auto h-full"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255, 200, 1, 0.3), rgba(255, 154, 50, 0.1))',
-                animation: 'float 3s ease-in-out infinite',
-                boxShadow: '0 0 60px rgba(255, 200, 1, 0.15), 0 40px 80px rgba(0, 0, 0, 0.5)',
-              }}
+              style={{ background: 'linear-gradient(135deg, rgba(255, 200, 1, 0.3), rgba(255, 154, 50, 0.1))', animation: 'float 3s ease-in-out infinite', boxShadow: '0 0 60px rgba(255, 200, 1, 0.15), 0 40px 80px rgba(0, 0, 0, 0.5)' }}
             >
-              <div
-                className="rounded-2xl p-6 w-full h-full relative overflow-hidden"
-                style={{ backgroundColor: 'var(--surface)' }}
+              <div 
+                className="rounded-2xl p-6 w-full h-full relative overflow-hidden cursor-pointer" 
+                style={{ 
+                  backgroundColor: 'var(--surface)',
+                  backgroundImage: 'linear-gradient(rgba(255,200,1,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,200,1,0.03) 1px, transparent 1px)',
+                  backgroundSize: '20px 20px',
+                  transformStyle: 'preserve-3d',
+                  willChange: 'transform'
+                }}
+                onMouseMove={handleMouseMoveMockup}
+                onMouseLeave={handleMouseLeaveMockup}
               >
-                {/* Top window chrome */}
-                <div className="flex items-center justify-between mb-5">
+                {/* Thin animated progress bar */}
+                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2.5px', backgroundColor: 'rgba(255,255,255,0.05)', zIndex: 10 }}>
+                  <div style={{ height: '100%', background: 'linear-gradient(90deg, var(--primary), var(--warm))', animation: 'progress-fill 3s ease-out infinite' }} />
+                </div>
+
+                {/* Frosted Glass Header Bar */}
+                <div 
+                  className="flex items-center justify-between px-4 py-2.5 -mx-6 -mt-6 mb-5" 
+                  style={{ 
+                    background: 'rgba(255,255,255,0.04)', 
+                    borderBottom: '1px solid rgba(255,255,255,0.08)', 
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
                   <div className="flex gap-1.5">
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,200,1,0.8)' }} />
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eab308' }} />
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e' }} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: '9999px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                    <div className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#ef4444' }} />
-                    <span style={{ color: '#ef4444', fontSize: '0.65rem', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.08em' }}>LIVE</span>
+                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.68rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>NexaFlow Dashboard</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: '9999px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                    <div className="live-dot" style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#ef4444' }} />
+                    <span style={{ color: '#ef4444', fontSize: '0.6rem', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.05em' }}>LIVE</span>
                   </div>
                 </div>
 
-                {/* Mini section label */}
                 <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'Inter', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Automation Overview</p>
-
-                {/* Metric rows with progress bars */}
+                
+                {/* Metric rows with javascript mount counters */}
                 {[
-                  { icon: '⚡', label: 'Workflows Run Today', value: '12,847', color: 'var(--primary)', pct: 82 },
-                  { icon: '📈', label: 'Automation Rate', value: '94.2%', color: 'var(--warm)', pct: 94 },
-                  { icon: '⏱', label: 'Time Saved', value: '3.2h avg', color: '#4ade80', pct: 67 },
+                  { icon: '⚡', label: 'Workflows Run Today', value: 12847, suffix: '', decimals: 0, color: 'var(--primary)', pct: 82 },
+                  { icon: '📈', label: 'Automation Rate', value: 94.2, suffix: '%', decimals: 1, color: 'var(--warm)', pct: 94 },
+                  { icon: '⏱', label: 'Time Saved', value: 3.2, suffix: 'h avg', decimals: 1, color: '#4ade80', pct: 67 },
                 ].map((m) => (
                   <div key={m.label} style={{ marginBottom: '14px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
                       <div style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: 'rgba(255,200,1,0.12)', border: '1px solid rgba(255,200,1,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{m.icon}</div>
                       <p style={{ flex: 1, fontSize: '0.65rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter' }}>{m.label}</p>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: m.color, fontFamily: 'JetBrains Mono' }}>{m.value}</span>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: m.color, fontFamily: 'var(--font-mono)' }}>
+                        <MockupCounter target={m.value} suffix={m.suffix} decimals={m.decimals} />
+                      </span>
                     </div>
                     <div style={{ width: '100%', height: '3px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
                       <div style={{ width: `${m.pct}%`, height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg, var(--primary), var(--warm))', transition: 'width 1s ease-out' }} />
@@ -235,17 +251,14 @@ export default function Hero() {
                   </div>
                 ))}
 
-                {/* 3D Bar chart */}
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 52, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 8 }}>
                   {[38, 58, 42, 75, 50, 68, 44, 80].map((h, i) => (
                     <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                      <div style={{ width: '100%', height: 3, background: 'linear-gradient(90deg,rgba(255,200,1,0.9),rgba(255,154,50,0.7))', borderRadius: '2px 2px 0 0', transform: 'skewX(-15deg)', marginBottom: -1, zIndex: 1 }} />
+                      <div style={{ width: '100%', height: 3, background: 'linear-gradient(90deg,rgba(255,200,1,0.9),rgba(255,153,50,0.7))', borderRadius: '2px 2px 0 0', transform: 'skewX(-15deg)', marginBottom: -1, zIndex: 1 }} />
                       <div style={{ width: '100%', height: `${h * 0.6}px`, background: i % 2 === 0 ? 'linear-gradient(180deg,rgba(255,200,1,0.75) 0%,rgba(255,200,1,0.2) 100%)' : 'linear-gradient(180deg,rgba(17,76,90,0.7) 0%,rgba(17,76,90,0.2) 100%)', borderRadius: '2px 2px 0 0' }} />
                     </div>
                   ))}
                 </div>
-
-                {/* Bottom glow */}
                 <div style={{ position: 'absolute', bottom: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,200,1,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
                 <div style={{ position: 'absolute', top: -20, left: -20, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(17,76,90,0.3) 0%, transparent 70%)', pointerEvents: 'none' }} />
               </div>
@@ -253,6 +266,59 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      {/* Demo Modal — Fix #11 */}
+      {showDemoModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+          onClick={() => setShowDemoModal(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl mx-4 rounded-2xl overflow-hidden"
+            style={{ background: 'var(--surface)', border: '1px solid rgba(255,200,1,0.3)', boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setShowDemoModal(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center text-white text-lg"
+              style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)' }}
+              aria-label="Close demo modal"
+            >
+              ×
+            </button>
+            {/* Browser chrome */}
+            <div className="flex items-center gap-2 px-4 py-3" style={{ background: 'rgba(0,0,0,0.3)' }}>
+              <div className="flex gap-1.5">
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#eab308' }} />
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#22c55e' }} />
+              </div>
+              <div className="flex-1 mx-4 px-3 py-1 rounded-md text-xs" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-mono)' }}>
+                app.nexaflow.ai/dashboard
+              </div>
+            </div>
+            {/* Demo content */}
+            <div className="p-12 text-center">
+              <div
+                className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center cursor-pointer"
+                style={{ background: 'rgba(255,200,1,0.15)', border: '2px solid var(--primary)', boxShadow: '0 0 40px rgba(255,200,1,0.3)' }}
+              >
+                <span style={{ fontSize: '2rem', marginLeft: '4px' }}>▶</span>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-mono)' }}>Watch NexaFlow in Action</h3>
+              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Full product demo coming soon. Join the beta to get early access.</p>
+              <button
+                className="btn-premium-primary mt-6 px-6 py-3"
+                onClick={() => { setShowDemoModal(false); document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
+              >
+                Join Beta →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
