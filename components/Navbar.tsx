@@ -20,23 +20,22 @@ export default function Navbar() {
       <nav
         className="fixed top-0 left-0 right-0 z-50 backdrop-blur-xl transition-all duration-300 ease-out"
         style={{
-          backgroundColor: scrolled ? 'rgba(241, 245, 244, 0.85)' : 'transparent',
-          borderBottom: scrolled ? '1px solid rgba(255, 200, 1, 0.2)' : '1px solid transparent',
+          backgroundColor: scrolled ? 'rgba(241,245,244,0.92)' : 'rgba(23,43,54,0.0)',
+          borderBottom: scrolled ? '1px solid rgba(255,200,1,0.25)' : '1px solid transparent',
+          boxShadow: scrolled ? '0 4px 24px rgba(17,76,90,0.08)' : 'none',
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
+            <div style={{ position: 'relative', width: 10, height: 10, flexShrink: 0 }}>
+              <div style={{
+                width: 10, height: 10, borderRadius: '50%',
                 backgroundColor: 'var(--primary)',
-                boxShadow: '0 0 8px var(--primary)',
+                boxShadow: '0 0 0 3px rgba(255,200,1,0.2), 0 0 12px rgba(255,200,1,0.5)',
                 animation: 'pulse-glow 2s ease-in-out infinite',
-              }}
-            />
+              }} />
+            </div>
             <span className="font-bold text-lg" style={{ color: 'var(--primary)', fontFamily: 'JetBrains Mono' }}>
               NexaFlow
             </span>
@@ -44,16 +43,16 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#platform" className="nav-link text-sm font-medium" style={{ color: 'var(--text)' }}>
+            <a href="#platform" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
               Platform
             </a>
-            <a href="#features" className="nav-link text-sm font-medium" style={{ color: 'var(--text)' }}>
+            <a href="#features" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
               Features
             </a>
-            <a href="#pricing" className="nav-link text-sm font-medium" style={{ color: 'var(--text)' }}>
+            <a href="#pricing" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
               Pricing
             </a>
-            <a href="#about" className="nav-link text-sm font-medium" style={{ color: 'var(--text)' }}>
+            <a href="#about" className="nav-link text-sm font-medium" style={{ color: 'var(--dark)' }}>
               About
             </a>
           </div>
@@ -72,6 +71,12 @@ export default function Navbar() {
                 color: 'var(--surface)',
                 borderRadius: '10px',
                 padding: '10px 24px',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 6px 20px rgba(17,76,90,0.25), 0 0 0 2px rgba(255,200,1,0.3)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = 'none';
               }}
             >
               Get Started

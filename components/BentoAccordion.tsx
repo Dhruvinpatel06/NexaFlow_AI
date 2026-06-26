@@ -177,7 +177,7 @@ export default function BentoAccordion() {
                     </span>
                   </div>
                 </div>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.6)' }}>
                   {feature.description}
                 </p>
                 {/* FIX 5 — Large Data Insights card (idx===2): 3D bar chart + upgraded sparkline */}
@@ -321,7 +321,7 @@ export default function BentoAccordion() {
                     transition: 'max-height 350ms ease-in-out',
                   }}
                 >
-                  <div ref={(el) => { contentRefs.current[idx] = el; }} className="px-6 pb-4 text-sm leading-relaxed" style={{ color: 'var(--muted)' }}>
+                  <div ref={(el) => { contentRefs.current[idx] = el; }} className="px-6 pb-4 text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.6)' }}>
                     {feature.description}
                   </div>
                 </div>

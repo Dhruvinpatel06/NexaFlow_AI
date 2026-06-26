@@ -61,15 +61,14 @@ export default function StatsBar() {
       className="py-16 px-6"
       style={{
         backgroundColor: 'var(--accent)',
-        backgroundImage: `repeating-linear-gradient(
-          45deg,
-          transparent,
-          transparent 10px,
-          rgba(17, 76, 90, 0.03) 10px,
-          rgba(17, 76, 90, 0.03) 11px
-        )`,
+        backgroundImage: `
+          repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(17,76,90,0.025) 20px, rgba(17,76,90,0.025) 21px),
+          radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,200,1,0.04) 0%, transparent 70%)
+        `,
       }}
     >
+      {/* Full-width top stripe */}
+      <div style={{ height: 3, width: '100%', background: 'linear-gradient(90deg, var(--dark), var(--primary), var(--warm), var(--primary), var(--dark))', backgroundSize: '200% auto', animation: 'shimmer 4s linear infinite', marginBottom: '2rem' }} />
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0">
           {STATS.map((stat, idx) => (
@@ -78,8 +77,8 @@ export default function StatsBar() {
               className="flex flex-col items-center justify-center text-center py-4 relative"
               style={{
                 borderRight: idx < STATS.length - 1 ? '1px solid rgba(17, 76, 90, 0.15)' : 'none',
-                borderLeft: '3px solid var(--primary)',
-                paddingLeft: '1.5rem',
+                borderLeft: '4px solid var(--primary)',
+                paddingLeft: '2rem',
               }}
             >
               {/* Top accent bar */}
@@ -97,12 +96,22 @@ export default function StatsBar() {
                   color: 'var(--dark)',
                   fontFamily: 'JetBrains Mono',
                   lineHeight: 1,
-                  textShadow: '0 2px 20px rgba(255, 200, 1, 0.3)',
+                  fontSize: 'clamp(2.8rem, 5vw, 4rem)',
+                  textShadow: '0 4px 24px rgba(17,76,90,0.15)',
+                  letterSpacing: '-0.04em',
                 }}
               >
                 <Counter target={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-sm md:text-base font-medium" style={{ color: 'var(--muted)' }}>
+              <p style={{
+                color: 'var(--dark)',
+                fontFamily: 'Inter, sans-serif',
+                fontWeight: 600,
+                fontSize: '0.7rem',
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                opacity: 0.7,
+              }}>
                 {stat.label}
               </p>
             </div>

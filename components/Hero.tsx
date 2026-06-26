@@ -4,14 +4,6 @@ import { useEffect, useRef } from 'react';
 
 const TRUST_COMPANIES = ['Stripe', 'Notion', 'Figma', 'Linear', 'Vercel', 'Slack'];
 
-const MOCK_METRICS = [
-  { icon: '⚡', label: 'Workflows Run Today', value: '12,847', color: 'var(--primary)' },
-  { icon: '📈', label: 'Automation Rate', value: '94.2%', color: 'var(--warm)' },
-  { icon: '⏱', label: 'Time Saved', value: '3.2h avg', color: '#4ade80' },
-];
-
-const BAR_HEIGHTS = [40, 65, 45, 80, 55];
-
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -42,11 +34,18 @@ export default function Hero() {
     <section
       aria-label="Hero"
       className="hero-bg relative w-full py-24 md:py-32 overflow-hidden"
-      style={{ backgroundColor: 'var(--dark)' }}
+      style={{
+        backgroundColor: 'var(--surface)',
+        backgroundImage: `
+          radial-gradient(ellipse 70% 50% at 50% -10%, rgba(255,200,1,0.14) 0%, transparent 65%),
+          radial-gradient(ellipse 50% 60% at 0% 100%, rgba(17,76,90,0.6) 0%, transparent 60%),
+          radial-gradient(ellipse 40% 40% at 100% 50%, rgba(255,154,50,0.08) 0%, transparent 55%)
+        `,
+      }}
     >
       <div className="hero-content max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
-          {/* Left Column - Text Content (60%) */}
+          {/* Left Column */}
           <div className="md:col-span-3 space-y-8">
             {/* Pill Badge */}
             <div
@@ -59,9 +58,7 @@ export default function Hero() {
             >
               <div
                 style={{
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
+                  width: 4, height: 4, borderRadius: '50%',
                   backgroundColor: 'var(--primary)',
                   boxShadow: '0 0 6px var(--primary)',
                   animation: 'pulse-glow 2s ease-in-out infinite',
@@ -86,7 +83,18 @@ export default function Hero() {
               <span className="block text-white font-black" style={{ fontWeight: 900 }}>
                 Automate Everything.
               </span>
-              <span className="block gradient-text font-black" style={{ fontWeight: 900 }}>
+              <span
+                className="block font-black"
+                style={{
+                  fontWeight: 900,
+                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9A32 50%, #FFC801 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  backgroundSize: '200% auto',
+                  animation: 'shimmer 4s linear infinite',
+                }}
+              >
                 Scale Infinitely.
               </span>
             </h1>
@@ -98,8 +106,12 @@ export default function Hero() {
               style={{
                 fontSize: '1.125rem',
                 lineHeight: 1.7,
-                borderLeft: '3px solid rgba(255, 200, 1, 0.4)',
+                borderLeft: '3px solid var(--primary)',
                 paddingLeft: '16px',
+                background: 'linear-gradient(90deg, rgba(255,200,1,0.06) 0%, transparent 100%)',
+                borderRadius: '0 6px 6px 0',
+                paddingTop: '8px',
+                paddingBottom: '8px',
                 color: 'rgba(255, 255, 255, 0.65)',
               }}
             >
@@ -116,12 +128,14 @@ export default function Hero() {
                   fontSize: '1rem',
                   fontWeight: 600,
                   color: 'var(--surface)',
+                  boxShadow: '0 4px 20px rgba(255,200,1,0.35)',
+                  border: '1px solid rgba(255,200,1,0.4)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.boxShadow = '0 8px 30px rgba(255, 200, 1, 0.4)';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 32px rgba(255,200,1,0.5), 0 0 0 2px rgba(255,200,1,0.2)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.boxShadow = 'none';
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 20px rgba(255,200,1,0.35)';
                 }}
               >
                 Start Free Trial
@@ -153,15 +167,7 @@ export default function Hero() {
 
             {/* Trust Marquee */}
             <div className="pt-8 space-y-3 overflow-hidden">
-              <p
-                className="text-xs"
-                style={{
-                  color: 'rgba(255, 255, 255, 0.4)',
-                  fontFamily: 'Inter, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '0.75rem',
-                }}
-              >
+              <p className="text-xs" style={{ color: 'rgba(255, 255, 255, 0.4)', fontFamily: 'Inter, sans-serif', fontWeight: 400, fontSize: '0.75rem' }}>
                 Trusted by teams at
               </p>
               <div className="overflow-hidden">
@@ -169,21 +175,11 @@ export default function Hero() {
                   {marqueeItems.map((company, idx) => (
                     <span
                       key={idx}
-                      className="flex items-center whitespace-nowrap"
-                      style={{
-                        opacity: 0.35,
-                        fontFamily: 'Inter, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '0.875rem',
-                        color: 'white',
-                      }}
+                      style={{ display: 'flex', alignItems: 'center', gap: 6, opacity: 0.45, fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '0.875rem', color: 'white' }}
                     >
+                      <span style={{ width: 5, height: 5, borderRadius: 1, backgroundColor: idx % 2 === 0 ? 'var(--primary)' : 'var(--warm)', opacity: 0.7, flexShrink: 0 }} />
                       {company}
-                      {idx < marqueeItems.length - 1 && (
-                        <span className="mx-4" style={{ opacity: 0.5 }}>
-                          •
-                        </span>
-                      )}
+                      {idx < marqueeItems.length - 1 && <span style={{ margin: '0 12px', opacity: 0.3 }}>·</span>}
                     </span>
                   ))}
                 </div>
@@ -191,7 +187,7 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column - Floating Mockup (40%) */}
+          {/* Right Column - Floating Mockup */}
           <div ref={mockupRef} className="md:col-span-2 relative h-96 md:h-full hidden md:block">
             <div
               className="rounded-2xl p-[1px] w-full max-w-sm mx-auto h-full"
@@ -205,77 +201,53 @@ export default function Hero() {
                 className="rounded-2xl p-6 w-full h-full relative overflow-hidden"
                 style={{ backgroundColor: 'var(--surface)' }}
               >
-                {/* LIVE Badge */}
-                <div
-                  className="absolute top-4 right-4 flex items-center gap-1.5 px-2 py-1 rounded-full"
-                  style={{
-                    backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                  }}
-                >
-                  <div
-                    className="live-dot w-1.5 h-1.5 rounded-full"
-                    style={{ backgroundColor: '#ef4444' }}
-                  />
-                  <span
-                    className="text-xs font-semibold"
-                    style={{ color: '#ef4444', fontFamily: 'JetBrains Mono' }}
-                  >
-                    LIVE
-                  </span>
-                </div>
-
-                {/* Mock Dashboard Header */}
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--primary)' }} />
-                    <div className="w-3 h-3 rounded-full bg-white/20" />
-                    <div className="w-3 h-3 rounded-full bg-white/20" />
+                {/* Top window chrome */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex gap-1.5">
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,200,1,0.8)' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                    <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: '9999px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                    <div className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#ef4444' }} />
+                    <span style={{ color: '#ef4444', fontSize: '0.65rem', fontFamily: 'JetBrains Mono', fontWeight: 700, letterSpacing: '0.08em' }}>LIVE</span>
                   </div>
                 </div>
 
-                {/* Metric Rows */}
-                <div className="space-y-4 mb-6">
-                  {MOCK_METRICS.map((metric) => (
-                    <div key={metric.label} className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-sm flex-shrink-0"
-                        style={{ backgroundColor: 'var(--primary)' }}
-                      >
-                        {metric.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs text-white/50 truncate">{metric.label}</p>
-                      </div>
-                      <span
-                        className="text-sm font-bold flex-shrink-0"
-                        style={{ color: metric.color, fontFamily: 'JetBrains Mono' }}
-                      >
-                        {metric.value}
-                      </span>
+                {/* Mini section label */}
+                <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'Inter', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Automation Overview</p>
+
+                {/* Metric rows with progress bars */}
+                {[
+                  { icon: '⚡', label: 'Workflows Run Today', value: '12,847', color: 'var(--primary)', pct: 82 },
+                  { icon: '📈', label: 'Automation Rate', value: '94.2%', color: 'var(--warm)', pct: 94 },
+                  { icon: '⏱', label: 'Time Saved', value: '3.2h avg', color: '#4ade80', pct: 67 },
+                ].map((m) => (
+                  <div key={m.label} style={{ marginBottom: '14px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: 'rgba(255,200,1,0.12)', border: '1px solid rgba(255,200,1,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{m.icon}</div>
+                      <p style={{ flex: 1, fontSize: '0.65rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter' }}>{m.label}</p>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: m.color, fontFamily: 'JetBrains Mono' }}>{m.value}</span>
+                    </div>
+                    <div style={{ width: '100%', height: '3px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
+                      <div style={{ width: `${m.pct}%`, height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg, var(--primary), var(--warm))', transition: 'width 1s ease-out' }} />
+                    </div>
+                  </div>
+                ))}
+
+                {/* 3D Bar chart */}
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 52, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 8 }}>
+                  {[38, 58, 42, 75, 50, 68, 44, 80].map((h, i) => (
+                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                      <div style={{ width: '100%', height: 3, background: 'linear-gradient(90deg,rgba(255,200,1,0.9),rgba(255,154,50,0.7))', borderRadius: '2px 2px 0 0', transform: 'skewX(-15deg)', marginBottom: -1, zIndex: 1 }} />
+                      <div style={{ width: '100%', height: `${h * 0.6}px`, background: i % 2 === 0 ? 'linear-gradient(180deg,rgba(255,200,1,0.75) 0%,rgba(255,200,1,0.2) 100%)' : 'linear-gradient(180deg,rgba(17,76,90,0.7) 0%,rgba(17,76,90,0.2) 100%)', borderRadius: '2px 2px 0 0' }} />
                     </div>
                   ))}
                 </div>
 
-                {/* Mini Bar Chart */}
-                <div className="flex gap-2 items-end h-16 pt-2">
-                  {BAR_HEIGHTS.map((height, idx) => (
-                    <div
-                      key={idx}
-                      className="flex-1 rounded-sm"
-                      style={{
-                        height: `${height}%`,
-                        background: 'linear-gradient(to top, var(--primary), rgba(255, 200, 1, 0.3))',
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Glow Accent */}
-                <div
-                  className="absolute -bottom-12 -right-12 w-40 h-40 rounded-full opacity-20 blur-3xl"
-                  style={{ backgroundColor: 'var(--primary)' }}
-                />
+                {/* Bottom glow */}
+                <div style={{ position: 'absolute', bottom: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,200,1,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                <div style={{ position: 'absolute', top: -20, left: -20, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(17,76,90,0.3) 0%, transparent 70%)', pointerEvents: 'none' }} />
               </div>
             </div>
           </div>

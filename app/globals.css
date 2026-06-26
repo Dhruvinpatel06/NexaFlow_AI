@@ -215,7 +215,7 @@ button, a {
   bottom: -4px;
   left: 0;
   width: 100%;
-  height: 2px;
+  height: 2.5px;
   background: var(--primary);
   transform: scaleX(0);
   transform-origin: left;
@@ -309,4 +309,33 @@ button, a {
 
 .bento-card-active {
   animation: card-breathe 3s ease-in-out infinite;
+}
+
+/* Pricing card hover border transitions */
+.pricing-card-starter {
+  border-left: 3px solid var(--accent);
+  transition: border-left-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+.pricing-card-starter:hover {
+  border-left-color: var(--primary);
+  box-shadow: 0 8px 32px rgba(17,76,90,0.1);
+}
+.pricing-card-enterprise {
+  border-right: 3px solid var(--accent);
+  transition: border-right-color 200ms ease-out, box-shadow 200ms ease-out;
+}
+.pricing-card-enterprise:hover {
+  border-right-color: var(--warm);
+  box-shadow: 0 8px 32px rgba(255,154,50,0.1);
+}
+
+/* Section reveal animation for non-hero sections */
+@keyframes section-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Pricing Pro card breathing */
+.pricing-pro-glow {
+  animation: card-breathe 4s ease-in-out infinite;
 }
