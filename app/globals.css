@@ -300,3 +300,13 @@ button, a {
   border-color: var(--primary) !important;
   box-shadow: 0 0 0 3px rgba(255, 200, 1, 0.1);
 }
+
+/* Bento card breathing glow */
+@keyframes card-breathe {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,200,1,0.2), 0 8px 24px rgba(255,200,1,0.08); }
+  50%       { box-shadow: 0 0 0 1px rgba(255,200,1,0.4), 0 16px 40px rgba(255,200,1,0.16); }
+}
+
+.bento-card-active {
+  animation: card-breathe 3s ease-in-out infinite;
+}
