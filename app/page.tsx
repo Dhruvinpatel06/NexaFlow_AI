@@ -11,10 +11,12 @@ import FAQ from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import ScrollProgress from '@/components/ScrollProgress';
 import ScrollToTop from '@/components/ScrollToTop';
+import SpotlightCursor from '@/components/SpotlightCursor';
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#030712] text-slate-100 relative overflow-hidden">
+      <SpotlightCursor />
       <ScrollProgress />
       <Navbar />
       

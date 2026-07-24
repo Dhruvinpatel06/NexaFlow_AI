@@ -28,6 +28,10 @@
   }
 }
 
+html, body, button, a, input, select, textarea {
+  cursor: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   background-color: var(--bg-space);
