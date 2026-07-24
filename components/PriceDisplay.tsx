@@ -10,7 +10,8 @@ interface PriceDisplayProps {
 export default function PriceDisplay({ planKey }: PriceDisplayProps) {
   const { isAnnual, currency } = usePricing();
   const basePrice = PRICING_MATRIX.plans[planKey].base;
-  const currencyData = PRICING_MATRIX.currencies[currency];
+  const currKey = (currency && PRICING_MATRIX.currencies[currency]) ? currency : 'USD';
+  const currencyData = PRICING_MATRIX.currencies[currKey];
   const price = computePrice(basePrice, isAnnual, currencyData.rate);
 
   return (
