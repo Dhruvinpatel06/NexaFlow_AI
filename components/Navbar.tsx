@@ -15,7 +15,7 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const [activeSection, setActiveSection] = useState('hero');
   const [bannerClosed, setBannerClosed] = useState(true);
 
@@ -69,7 +69,10 @@ export default function Navbar() {
   // Dark mode: read from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('nexaflow-theme');
-    if (saved === 'dark') {
+    if (saved === 'light') {
+      setIsDark(false);
+      document.documentElement.classList.remove('dark');
+    } else {
       setIsDark(true);
       document.documentElement.classList.add('dark');
     }
@@ -102,15 +105,7 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
-  const linkColor = isDark ? 'white' : scrolled ? 'var(--dark)' : 'white';
-  const navBgColor = scrolled
-    ? isDark
-      ? 'rgba(23,43,54,0.92)'
-      : 'rgba(241,245,244,0.92)'
-    : isDark
-    ? 'rgba(17,76,90,0.15)'
-    : 'rgba(23,43,54,0.0)';
-  const uiColor = isDark ? 'white' : scrolled ? 'var(--text)' : 'white';
+  const navBgColor = scrolled ? 'rgba(2,11,24,0.9)' : 'transparent';
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 flex flex-col pointer-events-none">
@@ -119,7 +114,8 @@ export default function Navbar() {
         className="pointer-events-auto w-full transition-all duration-300 ease-in-out cursor-pointer overflow-hidden flex items-center justify-center relative"
         style={{
           height: bannerClosed ? 0 : 36,
-          background: 'linear-gradient(90deg, var(--dark), #1a5f73)',
+          background: 'linear-gradient(90deg, #020B18, #0D2137)',
+          borderBottom: bannerClosed ? 'none' : '1px solid rgba(0,212,255,0.2)',
           transform: bannerClosed ? 'translateY(-100%)' : 'translateY(0)',
           opacity: bannerClosed ? 0 : 1,
         }}
@@ -138,32 +134,19 @@ export default function Navbar() {
         className="pointer-events-auto w-full transition-all duration-300 ease-out"
         style={{
           backgroundColor: navBgColor,
-          borderBottom: scrolled
-            ? isDark
-              ? '1px solid rgba(255,200,1,0.15)'
-              : '1px solid rgba(255,200,1,0.2)'
-            : '1px solid transparent',
-          boxShadow: scrolled ? '0 4px 24px rgba(17,76,90,0.08)' : 'none',
-          backdropFilter: scrolled ? 'blur(16px)' : isDark ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: scrolled ? 'blur(16px)' : isDark ? 'blur(20px)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(0,212,255,0.1)' : '1px solid transparent',
+          backdropFilter: scrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('hero')}>
-            <div style={{ position: 'relative', width: 10, height: 10, flexShrink: 0 }}>
-              <div
-                style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--primary)',
-                  boxShadow: '0 0 0 3px rgba(255,200,1,0.2), 0 0 12px rgba(255,200,1,0.5)',
-                  animation: 'pulse-glow 2s ease-in-out infinite',
-                }}
-              />
+          <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => scrollTo('hero')}>
+            <div style={{ position: 'relative', width: 10, height: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: 'var(--primary)', boxShadow: '0 0 10px var(--primary)' }} />
+              <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse-ring 2s infinite' }} />
             </div>
-            <span className="font-bold text-lg" style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
+            <span className="font-extrabold text-lg gradient-text-cyan" style={{ fontFamily: 'var(--font-mono)' }}>
               NexaFlow
             </span>
           </div>
@@ -180,8 +163,10 @@ export default function Navbar() {
                     e.preventDefault();
                     scrollTo(item.id);
                   }}
-                  className="nav-link text-sm font-medium relative"
-                  style={{ color: linkColor }}
+                  className="text-sm font-medium relative transition-colors duration-150"
+                  style={{ color: isActive ? 'var(--primary)' : 'var(--muted)' }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--primary)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = isActive ? 'var(--primary)' : 'var(--muted)')}
                 >
                   {item.label}
                   <span
@@ -207,19 +192,23 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             {/* Search */}
             <button
-              className="p-2 rounded-lg hover:opacity-70 transition-opacity focus-ring"
+              className="p-2 rounded-lg hover:opacity-70 transition-opacity focus-ring cursor-pointer"
               aria-label="Search"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
-              <Search color={uiColor} size={20} />
+              <Search color="var(--text)" size={20} />
             </button>
 
-            {/* Dark mode toggle */}
+            {/* Dark mode / Theme toggle */}
             <button
-              className="p-2 rounded-lg hover:opacity-70 transition-all duration-200 focus-ring"
+              className="p-2 rounded-lg hover:opacity-70 transition-all duration-200 focus-ring cursor-pointer"
               aria-label="Toggle dark mode"
               onClick={toggleDark}
-              style={{ fontSize: '1.1rem' }}
+              style={{
+                background: 'rgba(0,212,255,0.06)',
+                border: '1px solid rgba(0,212,255,0.15)',
+                fontSize: '1.1rem',
+              }}
             >
               <span
                 style={{
@@ -228,14 +217,26 @@ export default function Navbar() {
                   transform: isDark ? 'rotate(180deg)' : 'rotate(0deg)',
                 }}
               >
-                {isDark ? '☀️' : '🌙'}
+                {isDark ? '🌙' : '☀️'}
               </span>
             </button>
 
             {/* Get Started CTA */}
             <button
-              className="btn-premium-primary hidden md:inline-block focus-ring"
-              style={{ padding: '10px 24px' }}
+              className="hidden md:inline-block font-bold text-xs tracking-wider uppercase px-5 py-2.5 rounded-[10px] transition-all duration-200 focus-ring cursor-pointer"
+              style={{
+                background: 'linear-gradient(135deg, #00D4FF, #0099BB)',
+                color: '#020B18',
+                boxShadow: '0 0 20px rgba(0,212,255,0.2)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 30px rgba(0,212,255,0.4)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(0,212,255,0.2)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
               onClick={() => scrollTo('pricing')}
             >
               Get Started
@@ -243,17 +244,17 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2 focus-ring"
+              className="md:hidden p-2 focus-ring cursor-pointer"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <XMark color={uiColor} size={24} />
+                <XMark color="white" size={24} />
               ) : (
                 <div className="w-6 h-5 flex flex-col justify-center gap-1">
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
-                  <span className="w-full h-0.5 transition-all" style={{ backgroundColor: uiColor }} />
+                  <span className="w-full h-0.5 bg-white transition-all" />
+                  <span className="w-full h-0.5 bg-white transition-all" />
+                  <span className="w-full h-0.5 bg-white transition-all" />
                 </div>
               )}
             </button>
@@ -266,16 +267,16 @@ export default function Navbar() {
         <div
           className="pointer-events-auto w-full px-6 py-3"
           style={{
-            backgroundColor: 'var(--bg)',
-            borderBottom: '1px solid rgba(255,200,1,0.2)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+            backgroundColor: 'var(--surface)',
+            borderBottom: '1px solid rgba(0,212,255,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           }}
         >
           <input
             autoFocus
             placeholder="Search features, pricing, docs..."
             className="w-full max-w-2xl mx-auto block px-4 py-2 rounded-xl text-sm"
-            style={{ background: 'white', border: '2px solid var(--primary)', outline: 'none', color: 'var(--text)' }}
+            style={{ background: 'rgba(0,212,255,0.04)', border: '1px solid var(--primary)', outline: 'none', color: 'white' }}
             onKeyDown={(e) => e.key === 'Escape' && setIsSearchOpen(false)}
           />
         </div>
@@ -284,14 +285,13 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="pointer-events-auto fixed inset-0 top-16 z-40 backdrop-blur-sm md:hidden"
+          className="pointer-events-auto fixed inset-0 top-0 z-40 md:hidden flex flex-col justify-center items-center"
           onClick={() => setMobileMenuOpen(false)}
-          style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
+          style={{ backgroundColor: 'rgba(2,11,24,0.97)', backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)' }}
         >
           <div
-            className="bg-white border-b p-6 flex flex-col gap-4"
+            className="flex flex-col gap-8 text-center"
             onClick={(e) => e.stopPropagation()}
-            style={{ borderColor: 'var(--primary)' }}
           >
             {NAV_ITEMS.map((item) => (
               <a
@@ -301,14 +301,14 @@ export default function Navbar() {
                   e.preventDefault();
                   scrollTo(item.id);
                 }}
-                className="text-sm font-medium"
-                style={{ color: 'var(--text)' }}
+                className="text-2xl font-bold text-white/80 hover:text-[var(--primary)] transition-colors"
+                style={{ fontFamily: 'var(--font-mono)' }}
               >
                 {item.label}
               </a>
             ))}
             <button
-              className="btn-premium-primary px-4 py-2 w-full"
+              className="btn-premium-primary px-8 py-3.5 mt-4 text-sm font-bold"
               onClick={() => scrollTo('pricing')}
             >
               Get Started

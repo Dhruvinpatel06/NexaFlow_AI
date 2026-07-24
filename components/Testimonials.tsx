@@ -7,24 +7,27 @@ import { ChevronRight } from './icons/ChevronRight';
 const TESTIMONIALS = [
   {
     name: 'Sarah Johnson',
-    role: 'Product Manager at TechCorp',
+    role: 'Product Manager',
+    company: 'TechCorp',
     text: 'NexaFlow transformed how we manage workflows. We saved 20 hours per week on automation alone.',
     rating: 5,
-    avatar: 'SJ',
+    initials: 'SJ',
   },
   {
     name: 'Marcus Chen',
-    role: 'CTO at DataFlow',
-    text: "We automated 80% of our data pipeline in under a week. NexaFlow's AI agents are genuinely impressive — it feels like having 3 extra engineers on the team.",
+    role: 'CTO',
+    company: 'DataFlow Inc',
+    text: "We automated 80% of our data pipeline in under a week. NexaFlow's AI agents feel like having 3 extra senior engineers.",
     rating: 5,
-    avatar: 'MC',
+    initials: 'MC',
   },
   {
     name: 'Priya Sharma',
-    role: 'Head of Ops at ScaleUp',
-    text: 'The bento dashboard made onboarding our team trivial. Pricing is transparent, the currency switcher is smooth, and customer support actually responds.',
+    role: 'Head of Operations',
+    company: 'ScaleUp',
+    text: 'The currency switcher and pricing transparency alone convinced our finance team. Onboarding took 20 minutes. Unbelievable.',
     rating: 5,
-    avatar: 'PS',
+    initials: 'PS',
   },
 ];
 
@@ -118,41 +121,36 @@ export default function Testimonials() {
     <section
       id="about"
       aria-label="Testimonials"
-      className="testimonials-bg noise-overlay py-20 px-6 relative"
+      className="py-24 px-6 relative overflow-hidden"
       style={{
         backgroundColor: 'var(--surface)',
         backgroundImage: `
-          radial-gradient(ellipse 60% 50% at 50% 0%, rgba(255,200,1,0.1) 0%, transparent 60%),
-          radial-gradient(ellipse 40% 60% at 0% 100%, rgba(17,76,90,0.8) 0%, transparent 50%),
-          radial-gradient(ellipse 40% 40% at 100% 0%, rgba(255,154,50,0.07) 0%, transparent 50%)
+          linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px)
         `,
+        backgroundSize: '40px 40px',
       }}
     >
-      <div ref={sectionRef} className="hero-content max-w-5xl mx-auto reveal reveal-up">
+      <div ref={sectionRef} className="hero-content max-w-5xl mx-auto reveal reveal-up relative z-10">
         <div className="text-center mb-10">
           <div className="flex justify-center mb-4">
             <span
               style={{
                 display: 'inline-block',
-                paddingBottom: '4px',
-                borderBottom: '3px solid var(--primary)',
-                fontSize: '0.65rem',
-                fontWeight: 700,
+                fontSize: '0.6875rem',
+                fontWeight: 600,
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 color: 'var(--primary)',
               }}
             >
-              Social Proof
+              SOCIAL PROOF
             </span>
           </div>
-          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'white', fontFamily: 'var(--font-mono)' }}>
-            Trusted by Teams{' '}
-            <span style={{ background: 'linear-gradient(135deg,var(--primary),var(--warm))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Worldwide
-            </span>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white" style={{ fontFamily: 'var(--font-mono)' }}>
+            <span className="gradient-text-cyan">Trusted</span> by Teams Worldwide
           </h2>
-          <p className="text-lg" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+          <p className="text-lg" style={{ color: 'var(--muted)' }}>
             See what our customers have to say about NexaFlow
           </p>
         </div>
@@ -160,18 +158,18 @@ export default function Testimonials() {
         {/* Section Social Proof Stat Bar ABOVE Carousel */}
         <div className="flex items-center justify-center gap-8 md:gap-12 mb-12 flex-wrap">
           <div className="text-center">
-            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--primary)' }}>10,000+ Teams</p>
-            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'rgba(255,255,255,0.5)', fontSize: '0.8125rem' }}>Active users</p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.5rem', color: 'var(--secondary)' }}>10K+ Teams</p>
+            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'var(--muted)', fontSize: '0.8125rem' }}>Active users</p>
           </div>
-          <div style={{ width: 1, height: 32, background: 'rgba(255,255,255,0.2)' }} />
+          <span style={{ color: 'var(--muted)' }}>|</span>
           <div className="text-center">
-            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--primary)' }}>4.9★ Rating</p>
-            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'rgba(255,255,255,0.5)', fontSize: '0.8125rem' }}>Customer rating</p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.5rem', color: 'var(--secondary)' }}>4.9★ Rating</p>
+            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'var(--muted)', fontSize: '0.8125rem' }}>Customer rating</p>
           </div>
-          <div style={{ width: 1, height: 32, background: 'rgba(255,255,255,0.2)' }} />
+          <span style={{ color: 'var(--muted)' }}>|</span>
           <div className="text-center">
-            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--primary)' }}>99.9% Satisfaction</p>
-            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'rgba(255,255,255,0.5)', fontSize: '0.8125rem' }}>Retention rate</p>
+            <p style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.5rem', color: 'var(--secondary)' }}>99.9% Satisfaction</p>
+            <p style={{ fontFamily: 'var(--font-inter)', fontWeight: 400, color: 'var(--muted)', fontSize: '0.8125rem' }}>Retention rate</p>
           </div>
         </div>
 
@@ -179,13 +177,13 @@ export default function Testimonials() {
         <div
           className="relative overflow-hidden"
           style={{
-            background: 'rgba(255,255,255,0.05)',
+            background: 'rgba(13,33,55,0.8)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid rgba(255,200,1,0.12)',
+            border: '1px solid rgba(0,212,255,0.1)',
             borderRadius: '24px',
             padding: '2.5rem',
-            boxShadow: '0 32px 64px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,200,1,0.1)',
+            boxShadow: '0 32px 64px rgba(0,0,0,0.5)',
             transformStyle: 'preserve-3d',
             willChange: 'transform',
             cursor: 'pointer',
@@ -208,11 +206,11 @@ export default function Testimonials() {
             aria-hidden="true"
             style={{
               position: 'absolute',
-              top: 16,
+              top: 8,
               left: 24,
-              fontSize: '6rem',
+              fontSize: '8rem',
               lineHeight: 1,
-              color: 'rgba(255,200,1,0.08)',
+              color: 'rgba(0,212,255,0.05)',
               fontFamily: 'var(--font-mono), monospace',
               fontWeight: 800,
               pointerEvents: 'none',
@@ -224,70 +222,73 @@ export default function Testimonials() {
           </span>
 
           <div key={currentIdx} className="flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-8 testimonial-slide-active relative z-10" style={{ transformStyle: 'preserve-3d' }}>
-            {/* Gradient Avatar Circle with Initials */}
+            {/* Avatar Circle with Initials */}
             <div className="flex-shrink-0" style={{ transform: 'translateZ(20px)' }}>
               <div
                 style={{
-                  width: 48,
-                  height: 48,
+                  width: 56,
+                  height: 56,
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--dark), var(--primary))',
+                  background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: 'white',
+                  color: 'var(--bg)',
                   fontWeight: 700,
-                  fontSize: '0.875rem',
+                  fontSize: '1rem',
                   fontFamily: 'var(--font-mono), monospace',
-                  boxShadow: '0 0 0 2px rgba(255,200,1,0.3), 0 4px 12px rgba(0,0,0,0.2)',
+                  boxShadow: '0 0 16px rgba(0,212,255,0.3)',
                 }}
               >
-                {TESTIMONIALS[currentIdx].avatar}
+                {TESTIMONIALS[currentIdx].initials}
               </div>
             </div>
 
             <div className="flex-1 relative" style={{ transform: 'translateZ(10px)' }}>
               {/* Star Rating Row */}
-              <div className="mb-3 relative z-10" style={{ color: 'var(--primary)', fontSize: '1rem', letterSpacing: '2px' }}>
+              <div className="mb-3 relative z-10" style={{ color: 'var(--secondary)', fontSize: '1.1rem', letterSpacing: '2px' }}>
                 {'★'.repeat(TESTIMONIALS[currentIdx].rating)}
               </div>
 
-              <p className="text-lg md:text-xl leading-relaxed mb-4 relative z-10" style={{ color: 'rgba(255, 255, 255, 0.9)', fontStyle: 'italic', transform: 'translateZ(15px)' }}>
+              <p className="text-lg md:text-xl leading-relaxed mb-4 relative z-10 text-white/80" style={{ fontStyle: 'italic', fontFamily: 'var(--font-inter)' }}>
                 {TESTIMONIALS[currentIdx].text}
               </p>
 
-              <div className="relative z-10" style={{ transform: 'translateZ(15px)' }}>
-                <p className="font-bold" style={{ color: 'white', fontFamily: 'var(--font-mono)' }}>
+              <div className="relative z-10">
+                <p className="font-semibold text-white" style={{ fontFamily: 'var(--font-inter)' }}>
                   {TESTIMONIALS[currentIdx].name}
                 </p>
-                <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.65)' }}>
-                  {TESTIMONIALS[currentIdx].role}
+                <p className="text-sm" style={{ color: 'var(--muted)', fontFamily: 'var(--font-inter)' }}>
+                  {TESTIMONIALS[currentIdx].role} at {TESTIMONIALS[currentIdx].company}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Navigation Controls: Circular Buttons */}
-          <div className="flex items-center justify-between mt-8 pt-4 border-t border-[rgba(255,255,255,0.08)] relative z-20">
-            <div className="flex gap-2">
+          <div className="flex items-center justify-between mt-8 pt-4 border-t border-[rgba(0,212,255,0.08)] relative z-20">
+            <div className="flex gap-3">
               <button
                 onClick={handlePrev}
                 aria-label="Previous testimonial"
-                className="flex items-center justify-center transition-all focus-ring"
+                className="flex items-center justify-center transition-all focus-ring cursor-pointer"
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,200,1,0.15)',
+                  background: 'rgba(0,212,255,0.06)',
+                  border: '1px solid rgba(0,212,255,0.15)',
+                  color: 'var(--primary)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,200,1,0.1)';
-                  e.currentTarget.style.borderColor = 'rgba(255,200,1,0.4)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.12)';
+                  e.currentTarget.style.borderColor = 'rgba(0,212,255,0.4)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                  e.currentTarget.style.borderColor = 'rgba(255,200,1,0.15)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.06)';
+                  e.currentTarget.style.borderColor = 'rgba(0,212,255,0.15)';
+                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 <ChevronLeft color="var(--primary)" size={20} />
@@ -296,21 +297,24 @@ export default function Testimonials() {
               <button
                 onClick={handleNext}
                 aria-label="Next testimonial"
-                className="flex items-center justify-center transition-all focus-ring"
+                className="flex items-center justify-center transition-all focus-ring cursor-pointer"
                 style={{
-                  width: 44,
-                  height: 44,
+                  width: 48,
+                  height: 48,
                   borderRadius: '50%',
-                  background: 'rgba(255,255,255,0.06)',
-                  border: '1px solid rgba(255,200,1,0.15)',
+                  background: 'rgba(0,212,255,0.06)',
+                  border: '1px solid rgba(0,212,255,0.15)',
+                  color: 'var(--primary)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,200,1,0.1)';
-                  e.currentTarget.style.borderColor = 'rgba(255,200,1,0.4)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.12)';
+                  e.currentTarget.style.borderColor = 'rgba(0,212,255,0.4)';
+                  e.currentTarget.style.transform = 'scale(1.05)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
-                  e.currentTarget.style.borderColor = 'rgba(255,200,1,0.15)';
+                  e.currentTarget.style.background = 'rgba(0,212,255,0.06)';
+                  e.currentTarget.style.borderColor = 'rgba(0,212,255,0.15)';
+                  e.currentTarget.style.transform = 'scale(1)';
                 }}
               >
                 <ChevronRight color="var(--primary)" size={20} />
@@ -323,10 +327,10 @@ export default function Testimonials() {
                 <button
                   key={idx}
                   onClick={() => goToSlide(idx)}
-                  className="transition-all duration-300 ease-out focus-ring"
+                  className="transition-all duration-300 ease-out focus-ring cursor-pointer"
                   style={{
-                    backgroundColor: idx === currentIdx ? 'var(--primary)' : 'rgba(255, 255, 255, 0.2)',
-                    width: idx === currentIdx ? '24px' : '8px',
+                    backgroundColor: idx === currentIdx ? 'var(--primary)' : 'rgba(255, 255, 255, 0.15)',
+                    width: idx === currentIdx ? '28px' : '8px',
                     height: '8px',
                     borderRadius: idx === currentIdx ? '999px' : '50%',
                   }}

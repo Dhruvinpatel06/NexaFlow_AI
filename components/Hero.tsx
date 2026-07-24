@@ -40,7 +40,7 @@ const COMPANIES = ['Notion', 'Stripe', 'Linear', 'Vercel', 'Figma', 'Atlassian']
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const subtitleRef = useRef<HTMLDivElement>(null);
   const ctasRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
@@ -86,88 +86,110 @@ export default function Hero() {
     <section
       id="hero"
       aria-label="Hero"
-      className="hero-bg noise-overlay relative w-full pt-32 pb-24 md:pt-36 md:pb-32 overflow-hidden"
+      className="relative w-full pt-32 pb-24 md:pt-36 md:pb-32 overflow-hidden"
       style={{
-        backgroundColor: 'var(--surface)',
-        backgroundImage: `
-          radial-gradient(ellipse 70% 50% at 50% -10%, rgba(255,200,1,0.14) 0%, transparent 65%),
-          radial-gradient(ellipse 50% 60% at 0% 100%, rgba(17,76,90,0.6) 0%, transparent 60%),
-          radial-gradient(ellipse 40% 40% at 100% 50%, rgba(255,154,50,0.08) 0%, transparent 55%)
-        `,
+        backgroundColor: 'var(--bg)',
       }}
     >
-      {/* 3 CSS Floating Orb Decorations */}
-      <div
-        style={{
-          width: 600,
-          height: 600,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,200,1,0.08) 0%, transparent 70%)',
-          position: 'absolute',
-          top: -200,
-          left: -200,
-          animation: 'float 8s ease-in-out infinite',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          width: 400,
-          height: 400,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(255,154,50,0.06) 0%, transparent 70%)',
-          position: 'absolute',
-          bottom: -100,
-          right: -100,
-          animation: 'float 6s ease-in-out infinite reverse',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-      <div
-        style={{
-          width: 300,
-          height: 300,
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(17,76,90,0.15) 0%, transparent 70%)',
-          position: 'absolute',
-          top: '40%',
-          left: '40%',
-          animation: 'float 10s ease-in-out infinite 2s',
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+      {/* BACKGROUND LAYER */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {/* Large radial glow top-center */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(ellipse 120% 60% at 50% -10%, rgba(0,212,255,0.12) 0%, transparent 60%)',
+          }}
+        />
+        {/* Second glow bottom-right */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'radial-gradient(ellipse 80% 80% at 90% 110%, rgba(255,107,53,0.08) 0%, transparent 60%)',
+          }}
+        />
+        {/* Grid overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `
+              linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px)
+            `,
+            backgroundSize: '60px 60px',
+          }}
+        />
+        {/* Floating Orbs */}
+        <div
+          style={{
+            width: 600,
+            height: 600,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0,212,255,0.06), transparent 70%)',
+            position: 'absolute',
+            top: -200,
+            left: -200,
+            animation: 'float-slow 12s ease-in-out infinite',
+          }}
+        />
+        <div
+          style={{
+            width: 400,
+            height: 400,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,200,1,0.05), transparent 70%)',
+            position: 'absolute',
+            bottom: -100,
+            right: -100,
+            animation: 'float-medium 9s ease-in-out infinite 3s',
+          }}
+        />
+        <div
+          style={{
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(255,107,53,0.06), transparent 70%)',
+            position: 'absolute',
+            top: '40%',
+            left: '60%',
+            animation: 'float-slow 15s ease-in-out infinite 6s',
+          }}
+        />
+        {/* Animated Scan Line */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '1px',
+            background: 'linear-gradient(90deg, transparent, rgba(0,212,255,0.3), transparent)',
+            animation: 'scan-line 8s linear infinite',
+            opacity: 0.3,
+          }}
+        />
+      </div>
 
       <div className="hero-content relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
           {/* Left Column */}
           <div className="md:col-span-3 space-y-8">
-            {/* Eyebrow Badge with shimmer animation */}
+            {/* Top Eyebrow Badge */}
             <div
               ref={badgeRef}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full relative overflow-hidden"
+              className="glass inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full relative overflow-hidden"
               style={{
-                background: 'linear-gradient(90deg, rgba(255,200,1,0.08) 0%, rgba(255,200,1,0.2) 50%, rgba(255,200,1,0.08) 100%)',
-                backgroundSize: '200% auto',
-                animation: 'badge-shimmer 3s linear infinite',
-                border: '1px solid rgba(255, 200, 1, 0.4)',
+                background: 'rgba(0, 212, 255, 0.06)',
+                border: '1px solid rgba(0, 212, 255, 0.3)',
               }}
             >
-              <div
-                style={{
-                  width: 6,
-                  height: 6,
-                  borderRadius: '50%',
-                  backgroundColor: 'var(--primary)',
-                  boxShadow: '0 0 6px var(--primary)',
-                  animation: 'pulse-glow 2s ease-in-out infinite',
-                  flexShrink: 0,
-                }}
-              />
-              <span style={{ color: 'var(--primary)' }} className="text-sm font-medium relative z-10">
-                ✦ AI-Powered Automation — Now in Public Beta
+              <div style={{ position: 'relative', width: 6, height: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: 'var(--primary)' }} />
+                <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: 'var(--primary)', animation: 'pulse-ring 2s infinite' }} />
+              </div>
+              <span style={{ color: 'var(--primary)', fontFamily: 'var(--font-inter)', fontWeight: 500, fontSize: '0.8125rem' }} className="relative z-10">
+                ✦ AI-Powered · Now in Public Beta
               </span>
             </div>
 
@@ -175,80 +197,93 @@ export default function Hero() {
             <h1
               ref={titleRef}
               className="leading-tight animate-fade-in"
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', letterSpacing: '-0.03em' }}
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(3rem, 6vw, 5rem)', letterSpacing: '-0.03em' }}
             >
               <span className="block text-white font-black" style={{ fontWeight: 900 }}>
                 Automate Everything.
               </span>
-              <span
-                className="block font-black"
-                style={{
-                  fontWeight: 900,
-                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9A32 50%, #FFC801 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  backgroundSize: '200% auto',
-                  animation: 'shimmer-text 4s linear infinite',
-                }}
-              >
+              <span className="block font-black gradient-text-cyan" style={{ fontWeight: 900 }}>
                 Scale Infinitely.
               </span>
             </h1>
 
-            {/* Subheading */}
-            <p
+            {/* Terminal-style subheading */}
+            <div
               ref={subtitleRef}
-              className="max-w-lg"
+              className="max-w-xl"
               style={{
-                fontSize: '1.125rem',
-                lineHeight: 1.7,
+                background: 'rgba(0, 212, 255, 0.04)',
                 borderLeft: '3px solid var(--primary)',
-                paddingLeft: '16px',
-                background: 'linear-gradient(90deg, rgba(255,200,1,0.06) 0%, transparent 100%)',
-                borderRadius: '0 6px 6px 0',
-                paddingTop: '8px',
-                paddingBottom: '8px',
-                color: 'rgba(255, 255, 255, 0.75)',
+                padding: '12px 16px',
+                borderRadius: '0 8px 8px 0',
               }}
             >
-              Transform your workflow with intelligent AI agents. Boost productivity by 10x with seamless integrations and real-time insights.
-            </p>
+              <div
+                style={{
+                  fontFamily: 'var(--font-mono), monospace',
+                  color: 'var(--muted)',
+                  fontSize: '1rem',
+                  lineHeight: 1.6,
+                  overflow: 'hidden',
+                  whiteSpace: 'nowrap',
+                  borderRight: '2px solid transparent',
+                  animation: 'typewriter 2s steps(60) 500ms forwards, cursor-blink 1s step-end 500ms 2s forwards',
+                }}
+              >
+                &gt; Transform workflows with AI agents. Ship 10x faster.
+              </div>
+            </div>
 
-            {/* CTA Buttons */}
-            <div ref={ctasRef} className="flex flex-col sm:flex-row gap-4 pt-4">
+            {/* CTAs Row */}
+            <div ref={ctasRef} className="flex flex-col sm:flex-row gap-4 pt-2">
               <button
                 className="btn-premium-primary font-semibold focus-ring"
-                style={{ padding: '14px 32px' }}
+                style={{
+                  padding: '14px 32px',
+                  background: 'linear-gradient(135deg, #00D4FF, #0099BB)',
+                  color: '#020B18',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  boxShadow: '0 0 30px rgba(0, 212, 255, 0.3)',
+                }}
                 onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                Start Free Trial
+                Start Free Trial →
               </button>
 
               <button
                 className="btn-premium-outline font-semibold focus-ring"
-                style={{ padding: '14px 32px' }}
+                style={{
+                  padding: '14px 32px',
+                  background: 'transparent',
+                  border: '1px solid rgba(0, 212, 255, 0.3)',
+                  color: 'var(--primary)',
+                  borderRadius: '12px',
+                }}
                 onClick={() => setShowDemoModal(true)}
               >
-                Watch Demo →
+                Watch Demo ▶
               </button>
             </div>
 
-            {/* Scrolling Trust Marquee Row */}
-            <div ref={marqueeRef} className="pt-6 space-y-3">
+            {/* Trust Marquee */}
+            <div ref={marqueeRef} className="pt-4 space-y-3">
               <p
                 style={{
-                  color: 'rgba(255,255,255,0.3)',
+                  color: 'var(--muted)',
                   fontFamily: 'var(--font-inter)',
                   fontWeight: 500,
                   letterSpacing: '0.15em',
-                  fontSize: '0.6875rem',
+                  fontSize: '0.7rem',
                   textTransform: 'uppercase',
                 }}
               >
-                POWERING TEAMS AT
+                TRUSTED BY TEAMS AT
               </p>
-              <div className="w-full overflow-hidden" style={{ maskImage: 'linear-gradient(90deg, transparent, black 15%, black 85%, transparent)' }}>
+              <div
+                className="w-full overflow-hidden"
+                style={{ maskImage: 'linear-gradient(90deg, transparent, black 15%, black 85%, transparent)', WebkitMaskImage: 'linear-gradient(90deg, transparent, black 15%, black 85%, transparent)' }}
+              >
                 <div
                   className="flex gap-12 items-center w-max"
                   style={{
@@ -258,9 +293,9 @@ export default function Hero() {
                   onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = 'running')}
                 >
                   {[...COMPANIES, ...COMPANIES, ...COMPANIES].map((company, index) => (
-                    <span key={index} className="flex items-center gap-4 text-white/35 font-semibold text-base" style={{ fontFamily: 'var(--font-inter)' }}>
+                    <span key={index} className="flex items-center gap-4 text-white/25 font-semibold text-sm" style={{ fontFamily: 'var(--font-inter)' }}>
                       <span>{company}</span>
-                      <span style={{ color: 'rgba(255,200,1,0.5)' }}>·</span>
+                      <span style={{ color: 'rgba(0, 212, 255, 0.3)' }}>·</span>
                     </span>
                   ))}
                 </div>
@@ -268,96 +303,86 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Column - Premium Glassmorphism Floating Mockup */}
-          <div ref={mockupRef} className="md:col-span-2 relative h-96 md:h-full hidden md:block">
+          {/* Right Column - 3D Floating Dashboard Card */}
+          <div ref={mockupRef} className="md:col-span-2 relative h-96 md:h-full hidden md:block" style={{ perspective: '1200px' }}>
             <div
-              className="rounded-2xl p-[1px] w-full max-w-sm mx-auto h-full"
+              className="rounded-2xl p-6 w-full max-w-sm mx-auto cursor-pointer relative"
               style={{
-                background: 'linear-gradient(135deg, rgba(255, 200, 1, 0.3), rgba(255, 154, 50, 0.1))',
-                animation: 'float 3s ease-in-out infinite',
-                outline: '1px solid rgba(255,200,1,0.2)',
-                boxShadow:
-                  '0 0 0 1px rgba(255,200,1,0.1), 0 30px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,200,1,0.08)',
+                backgroundColor: 'rgba(7, 21, 37, 0.9)',
+                border: '1px solid rgba(0, 212, 255, 0.2)',
+                borderRadius: '20px',
+                boxShadow: '0 0 0 1px rgba(0,212,255,0.1), 0 40px 80px rgba(0,0,0,0.6), 0 0 80px rgba(0,212,255,0.08), inset 0 1px 0 rgba(0,212,255,0.15)',
+                animation: 'float-slow 6s ease-in-out infinite',
+                transformStyle: 'preserve-3d',
+                willChange: 'transform',
               }}
+              onMouseMove={handleMouseMoveMockup}
+              onMouseLeave={handleMouseLeaveMockup}
             >
-              <div
-                className="rounded-2xl p-6 w-full h-full relative overflow-hidden cursor-pointer flex flex-col justify-between"
-                style={{
-                  backgroundColor: 'var(--surface)',
-                  backgroundImage:
-                    'linear-gradient(rgba(255,200,1,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,200,1,0.03) 1px, transparent 1px)',
-                  backgroundSize: '20px 20px',
-                  transformStyle: 'preserve-3d',
-                  willChange: 'transform',
-                }}
-                onMouseMove={handleMouseMoveMockup}
-                onMouseLeave={handleMouseLeaveMockup}
-              >
-                {/* Thin animated progress bar */}
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '2.5px', backgroundColor: 'rgba(255,255,255,0.05)', zIndex: 10 }}>
-                  <div style={{ height: '100%', background: 'linear-gradient(90deg, var(--primary), var(--warm))', animation: 'progress-fill 3s ease-out infinite' }} />
+              {/* Card Header */}
+              <div className="flex items-center justify-between pb-3 mb-4" style={{ borderBottom: '1px solid rgba(0, 212, 255, 0.15)' }}>
+                <span style={{ color: 'var(--primary)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.05em' }}>
+                  NexaFlow Dashboard
+                </span>
+                <div style={{ display: 'flex', items: 'center', gap: 5, padding: '3px 10px', borderRadius: '9999px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                  <div className="live-dot" style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#ef4444' }} />
+                  <span style={{ color: '#ef4444', fontSize: '0.65rem', fontFamily: 'var(--font-inter)', fontWeight: 500 }}>● LIVE</span>
                 </div>
+              </div>
 
-                {/* Frosted Glass Header Bar */}
-                <div
-                  className="flex items-center justify-between px-4 py-2.5 -mx-6 -mt-6 mb-4"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    borderBottom: '1px solid rgba(255,255,255,0.08)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                  }}
-                >
-                  <div className="flex gap-1.5">
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#ef4444' }} />
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#eab308' }} />
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e' }} />
+              {/* 3 Metric Rows */}
+              {[
+                { icon: '⚡', label: 'Workflows Today', value: 12847, suffix: '', decimals: 0 },
+                { icon: '📈', label: 'Automation Rate', value: 94.2, suffix: '%', decimals: 1 },
+                { icon: '⏱', label: 'Time Saved', value: 3.2, suffix: 'h avg', decimals: 1 },
+              ].map((m) => (
+                <div key={m.label} className="flex items-center gap-3 py-2.5" style={{ borderBottom: '1px solid var(--border)' }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, rgba(0,212,255,0.2), rgba(0,212,255,0.05))',
+                      border: '1px solid rgba(0,212,255,0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.85rem',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {m.icon}
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.68rem', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>NexaFlow Dashboard</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: '9999px', backgroundColor: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)' }}>
-                    <div className="live-dot" style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#ef4444' }} />
-                    <span style={{ color: '#ef4444', fontSize: '0.6rem', fontFamily: 'var(--font-mono)', fontWeight: 700, letterSpacing: '0.05em' }}>LIVE</span>
-                  </div>
+                  <span style={{ flex: 1, fontSize: '0.8125rem', color: 'var(--muted)', fontFamily: 'var(--font-inter)' }}>{m.label}</span>
+                  <span style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
+                    <MockupCounter target={m.value} suffix={m.suffix} decimals={m.decimals} />
+                  </span>
                 </div>
+              ))}
 
-                <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'Inter', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>Automation Overview</p>
-
-                {/* Metric rows with 600ms delayed counters */}
-                {[
-                  { icon: '⚡', label: 'Workflows Run Today', value: 12847, suffix: '', decimals: 0, color: 'var(--primary)', pct: 82 },
-                  { icon: '📈', label: 'Automation Rate', value: 94.2, suffix: '%', decimals: 1, color: 'var(--warm)', pct: 94 },
-                  { icon: '⏱', label: 'Time Saved', value: 3.2, suffix: 'h avg', decimals: 1, color: '#4ade80', pct: 67 },
-                ].map((m) => (
-                  <div key={m.label} style={{ marginBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <div style={{ width: 26, height: 26, borderRadius: '8px', backgroundColor: 'rgba(255,200,1,0.12)', border: '1px solid rgba(255,200,1,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{m.icon}</div>
-                      <p style={{ flex: 1, fontSize: '0.65rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter' }}>{m.label}</p>
-                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: m.color, fontFamily: 'var(--font-mono)' }}>
-                        <MockupCounter target={m.value} suffix={m.suffix} decimals={m.decimals} />
-                      </span>
-                    </div>
-                    <div style={{ width: '100%', height: '3px', borderRadius: '9999px', backgroundColor: 'rgba(255,255,255,0.07)' }}>
-                      <div style={{ width: `${m.pct}%`, height: '100%', borderRadius: '9999px', background: 'linear-gradient(90deg, var(--primary), var(--warm))', transition: 'width 1s ease-out' }} />
-                    </div>
-                  </div>
+              {/* Mini bar chart (5 bars, CSS only) */}
+              <div style={{ height: 56, display: 'flex', alignItems: 'flex-end', gap: 6, paddingTop: '1rem', marginTop: 4 }}>
+                {[50, 75, 40, 90, 65].map((h, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      flex: 1,
+                      height: `${h}%`,
+                      borderRadius: '3px 3px 0 0',
+                      background: i === 3 ? 'linear-gradient(to top, var(--primary), rgba(0,212,255,0.5))' : 'rgba(0,212,255,0.2)',
+                      transition: 'all 150ms ease-out',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--primary)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = i === 3 ? 'linear-gradient(to top, var(--primary), rgba(0,212,255,0.5))' : 'rgba(0,212,255,0.2)')}
+                  />
                 ))}
+              </div>
 
-                {/* 5-bar mini chart at bottom */}
-                <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 40, padding: '0 0.5rem 0.5rem', marginTop: 8 }}>
-                  {[60, 80, 45, 90, 75].map((h, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        flex: 1,
-                        height: `${h}%`,
-                        borderRadius: '3px 3px 0 0',
-                        background: i === 3 ? 'var(--primary)' : 'rgba(255,200,1,0.3)',
-                        transition: 'height 1s ease-out',
-                        animationDelay: `${i * 0.1}s`,
-                      }}
-                    />
-                  ))}
-                </div>
+              {/* Bottom status text */}
+              <div className="flex items-center justify-between pt-3 mt-2" style={{ borderTop: '1px solid rgba(0,212,255,0.1)' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--muted)', fontFamily: 'var(--font-inter)' }}>Updated 2s ago ·</span>
+                <span className="w-2 h-2 rounded-full bg-[var(--primary)] animate-pulse" />
               </div>
             </div>
           </div>
@@ -368,12 +393,12 @@ export default function Hero() {
       {showDemoModal && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+          style={{ backgroundColor: 'rgba(2,11,24,0.85)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
           onClick={() => setShowDemoModal(false)}
         >
           <div
             className="relative w-full max-w-2xl mx-4 rounded-2xl overflow-hidden"
-            style={{ background: 'var(--surface)', border: '1px solid rgba(255,200,1,0.3)', boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
+            style={{ background: 'var(--surface)', border: '1px solid rgba(0,212,255,0.3)', boxShadow: '0 32px 64px rgba(0,0,0,0.7)' }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -397,12 +422,12 @@ export default function Hero() {
             <div className="p-12 text-center">
               <div
                 className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center cursor-pointer"
-                style={{ background: 'rgba(255,200,1,0.15)', border: '2px solid var(--primary)', boxShadow: '0 0 40px rgba(255,200,1,0.3)' }}
+                style={{ background: 'rgba(0,212,255,0.15)', border: '2px solid var(--primary)', boxShadow: '0 0 40px rgba(0,212,255,0.3)' }}
               >
-                <span style={{ fontSize: '2rem', marginLeft: '4px' }}>▶</span>
+                <span style={{ fontSize: '2rem', marginLeft: '4px', color: 'var(--primary)' }}>▶</span>
               </div>
               <h3 className="text-2xl font-bold text-white mb-2" style={{ fontFamily: 'var(--font-mono)' }}>Watch NexaFlow in Action</h3>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Full product demo coming soon. Join the beta to get early access.</p>
+              <p style={{ color: 'var(--muted)', fontSize: '0.9rem' }}>Full product demo coming soon. Join the beta to get early access.</p>
               <button
                 className="btn-premium-primary mt-6 px-6 py-3"
                 onClick={() => {

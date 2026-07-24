@@ -22,8 +22,16 @@ export default function ScrollProgress() {
   }, []);
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '3px', zIndex: 9999, backgroundColor: 'rgba(17,76,90,0.15)' }}>
-      <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(90deg, #FFC801, #FF9932)', transition: 'width 50ms linear', boxShadow: '0 0 8px rgba(255,200,1,0.6)' }} />
+    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '2px', zIndex: 100, pointerEvents: 'none' }}>
+      <div
+        style={{
+          height: '100%',
+          width: `${progress}%`,
+          background: 'linear-gradient(90deg, #00D4FF, #FFC801, #FF6B35)',
+          boxShadow: '0 0 8px var(--primary)',
+          transition: 'width 50ms linear',
+        }}
+      />
     </div>
   );
 }
