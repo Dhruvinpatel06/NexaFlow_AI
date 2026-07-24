@@ -28,7 +28,7 @@
   }
 }
 
-html, body, button, a, input, select, textarea {
+*, *::before, *::after, html, body, button, a, input, select, textarea, [role="button"] {
   cursor: none !important;
 }
 

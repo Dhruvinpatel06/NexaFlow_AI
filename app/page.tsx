@@ -12,17 +12,15 @@ import Footer from '@/components/Footer';
 import ScrollProgress from '@/components/ScrollProgress';
 import ScrollToTop from '@/components/ScrollToTop';
 import SpotlightCursor from '@/components/SpotlightCursor';
-import SceneCamera from '@/components/SceneCamera';
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#030712] text-slate-100 relative overflow-hidden">
+    <main className="min-h-screen bg-[#030303] text-slate-100 relative overflow-hidden">
       <SpotlightCursor />
-      <SceneCamera />
       <ScrollProgress />
       <Navbar />
       
-      {/* 8-Scene Camera Travel Journey Flow */}
+      {/* Landing Page Flow */}
       <Hero />
       <InteractiveAIDemo />
       <BentoAccordion />

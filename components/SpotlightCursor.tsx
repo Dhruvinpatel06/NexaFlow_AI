@@ -3,43 +3,24 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
 
-interface ClickRipple {
-  id: number;
-  x: number;
-  y: number;
-}
-
 export default function SpotlightCursor() {
-  const [isIdle, setIsIdle] = useState(false);
   const [isClicking, setIsClicking] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  
-  // Element hover states
   const [hoverState, setHoverState] = useState<
-    'default' | 'button' | 'link' | 'card' | 'text' | 'image' | 'drag'
+    'default' | 'button' | 'link' | 'card' | 'text' | 'drag'
   >('default');
-
-  const [ripples, setRipples] = useState<ClickRipple[]>([]);
-  const idleTimerRef = useRef<NodeJS.Timeout>();
-  const scrollTimerRef = useRef<NodeJS.Timeout>();
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  // Fast Spring for Immediate Center Dot
-  const dotSpringConfig = { damping: 28, stiffness: 450, mass: 0.2 };
+  // Immediate High-Precision Spring for Center Pointer Dot (0ms perceptible delay)
+  const dotSpringConfig = { damping: 35, stiffness: 650, mass: 0.1 };
   const dotX = useSpring(mouseX, dotSpringConfig);
   const dotY = useSpring(mouseY, dotSpringConfig);
 
-  // Smooth Delayed Spring for Trailing Ring
-  const ringSpringConfig = { damping: 30, stiffness: 180, mass: 0.6 };
+  // Smooth Concentric Spring for Outer Ring (centered directly over dot)
+  const ringSpringConfig = { damping: 30, stiffness: 380, mass: 0.3 };
   const ringX = useSpring(mouseX, ringSpringConfig);
   const ringY = useSpring(mouseY, ringSpringConfig);
-
-  // Soft Volumetric Aura Spring
-  const auraSpringConfig = { damping: 35, stiffness: 120, mass: 0.9 };
-  const auraX = useSpring(mouseX, auraSpringConfig);
-  const auraY = useSpring(mouseY, auraSpringConfig);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -47,38 +28,20 @@ export default function SpotlightCursor() {
       mouseX.set(clientX);
       mouseY.set(clientY);
 
-      // Reset idle timer
-      setIsIdle(false);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-      idleTimerRef.current = setTimeout(() => {
-        setIsIdle(true);
-      }, 2500);
-
-      // Inspect target element for context hover state
       const target = e.target as HTMLElement;
       if (!target) {
         setHoverState('default');
         return;
       }
 
-      // 1. Draggable Elements
+      // Context state detection
       if (
         target.getAttribute('draggable') === 'true' ||
         target.closest('[draggable="true"]') ||
         target.classList.contains('draggable')
       ) {
         setHoverState('drag');
-      }
-      // 2. Images
-      else if (
-        target.tagName === 'IMG' ||
-        target.closest('picture') ||
-        target.classList.contains('img-target')
-      ) {
-        setHoverState('image');
-      }
-      // 3. Buttons
-      else if (
+      } else if (
         target.tagName === 'BUTTON' ||
         target.getAttribute('role') === 'button' ||
         target.closest('button') ||
@@ -86,22 +49,16 @@ export default function SpotlightCursor() {
         target.classList.contains('btn-premium-outline')
       ) {
         setHoverState('button');
-      }
-      // 4. Links
-      else if (target.tagName === 'A' || target.closest('a')) {
+      } else if (target.tagName === 'A' || target.closest('a')) {
         setHoverState('link');
-      }
-      // 5. Cards & Containers
-      else if (
+      } else if (
         target.classList.contains('glass-card') ||
         target.classList.contains('glass') ||
         target.closest('.glass-card') ||
         target.closest('.glass')
       ) {
         setHoverState('card');
-      }
-      // 6. Text Elements
-      else if (
+      } else if (
         target.tagName === 'P' ||
         target.tagName === 'H1' ||
         target.tagName === 'H2' ||
@@ -121,99 +78,63 @@ export default function SpotlightCursor() {
     const handleMouseDown = () => setIsClicking(true);
     const handleMouseUp = () => setIsClicking(false);
 
-    const handleClick = (e: MouseEvent) => {
-      const newRipple: ClickRipple = {
-        id: Date.now(),
-        x: e.clientX,
-        y: e.clientY,
-      };
-      setRipples((prev) => [...prev.slice(-4), newRipple]);
-    };
-
-    const handleScroll = () => {
-      setIsScrolling(true);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
-      scrollTimerRef.current = setTimeout(() => {
-        setIsScrolling(false);
-      }, 150);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('click', handleClick);
-    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('click', handleClick);
-      window.removeEventListener('scroll', handleScroll);
-      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
-      if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
     };
   }, [mouseX, mouseY]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-[99999] overflow-hidden mix-blend-difference">
-      {/* 1. Outer Volumetric Soft Spotlight Beam */}
-      <motion.div
-        style={{
-          x: auraX,
-          y: auraY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        animate={{
-          scale: hoverState === 'button' ? 1.8 : hoverState === 'card' ? 1.4 : 1,
-          opacity: isIdle ? 0.2 : 0.6,
-        }}
-        transition={{ duration: 0.2 }}
-        className="w-[320px] h-[320px] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,rgba(255,255,255,0.06)_45%,transparent_70%)] blur-2xl"
-      />
+      {/* Outer Concentric Thin Ring (Centered directly over pointer) */}
+      {hoverState !== 'text' && (
+        <motion.div
+          style={{
+            x: ringX,
+            y: ringY,
+            translateX: '-50%',
+            translateY: '-50%',
+          }}
+          animate={{
+            scale: isClicking
+              ? 0.85
+              : hoverState === 'button'
+              ? 1.5
+              : hoverState === 'card'
+              ? 1.4
+              : hoverState === 'link'
+              ? 0.8
+              : hoverState === 'drag'
+              ? 1.6
+              : 1,
+            opacity: hoverState === 'button' ? 0.95 : 0.6,
+          }}
+          transition={{ duration: 0.15, ease: 'easeOut' }}
+          className={`absolute flex items-center justify-center rounded-full border transition-all duration-200 ${
+            hoverState === 'button'
+              ? 'w-7 h-7 border-white bg-white/10 shadow-[0_0_12px_rgba(255,255,255,0.6)]'
+              : hoverState === 'card'
+              ? 'w-8 h-8 border-white/60 bg-white/5'
+              : hoverState === 'drag'
+              ? 'w-9 h-9 border-white bg-white/20'
+              : 'w-6 h-6 border-white/40 bg-transparent'
+          }`}
+        >
+          {/* Optional Arrow Indicator for Dragging */}
+          {hoverState === 'drag' && (
+            <span className="text-[10px] font-mono font-bold text-white tracking-widest">
+              ↔
+            </span>
+          )}
+        </motion.div>
+      )}
 
-      {/* 2. Trailing Ring (Delayed Physics & Context-Aware Morphs) */}
-      <motion.div
-        style={{
-          x: ringX,
-          y: ringY,
-          translateX: '-50%',
-          translateY: '-50%',
-        }}
-        animate={{
-          scale: isClicking
-            ? 0.75
-            : hoverState === 'button'
-            ? 1.8
-            : hoverState === 'card'
-            ? 1.4
-            : 1,
-          scaleY: isScrolling ? 1.3 : 1,
-          scaleX: isScrolling ? 0.8 : 1,
-          rotate: hoverState === 'card' ? 15 : 0,
-          borderRadius: hoverState === 'link' ? '8px' : '9999px',
-          opacity: isIdle ? 0.3 : hoverState === 'button' ? 0.95 : 0.7,
-        }}
-        transition={{ duration: 0.2 }}
-        className={`absolute flex items-center justify-center border border-white/80 bg-white/10 backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.4)] ${
-          hoverState === 'image' || hoverState === 'drag' ? 'w-16 h-16' : 'w-10 h-10'
-        }`}
-      >
-        {/* View / Drag Text Label */}
-        {hoverState === 'image' && (
-          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-white">
-            VIEW
-          </span>
-        )}
-        {hoverState === 'drag' && (
-          <span className="text-[9px] font-mono font-bold tracking-widest uppercase text-white">
-            DRAG
-          </span>
-        )}
-      </motion.div>
-
-      {/* 3. Center Dot (Fast Physics / Slim Text Beam Morph) */}
+      {/* Exact Center Pointer Dot / I-Beam (Primary interaction point) */}
       <motion.div
         style={{
           x: dotX,
@@ -222,37 +143,19 @@ export default function SpotlightCursor() {
           translateY: '-50%',
         }}
         animate={{
-          scale: isClicking ? 0.6 : hoverState === 'button' ? 1.5 : 1,
-          opacity: isIdle ? 0.4 : 1,
+          scale: isClicking ? 0.75 : 1,
         }}
-        transition={{ duration: 0.15 }}
+        transition={{ duration: 0.1 }}
         className="relative flex items-center justify-center"
       >
         {hoverState === 'text' ? (
-          /* Slim Vertical Beam for Text */
-          <div className="w-0.5 h-5 bg-white rounded-full shadow-[0_0_10px_#FFFFFF]" />
+          /* I-Beam Text Selection Cursor */
+          <div className="w-[2px] h-4.5 bg-white rounded-full shadow-[0_0_8px_#FFFFFF]" />
         ) : (
-          /* Standard Glowing Center Dot */
-          <div className="w-3.5 h-3.5 rounded-full bg-white shadow-[0_0_16px_#FFFFFF,0_0_30px_#FFFFFF]" />
+          /* 9px Matte White Center Pointer Dot */
+          <div className="w-2.5 h-2.5 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.9)]" />
         )}
       </motion.div>
-
-      {/* 4. Click Expanding Ripple Waves */}
-      {ripples.map((r) => (
-        <motion.div
-          key={r.id}
-          initial={{ scale: 0.4, opacity: 0.9 }}
-          animate={{ scale: 3.2, opacity: 0 }}
-          transition={{ duration: 0.55, ease: 'easeOut' }}
-          style={{
-            left: r.x,
-            top: r.y,
-            translateX: '-50%',
-            translateY: '-50%',
-          }}
-          className="absolute w-12 h-12 rounded-full border border-white bg-white/20 shadow-[0_0_25px_#FFFFFF]"
-        />
-      ))}
     </div>
   );
 }
