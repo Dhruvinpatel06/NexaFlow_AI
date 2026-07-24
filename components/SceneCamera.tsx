@@ -40,11 +40,11 @@ export default function SceneCamera() {
   return (
     <div className="fixed left-6 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col gap-4 pointer-events-auto">
       {/* Top Scene Tracker */}
-      <div className="bg-slate-950/80 backdrop-blur-xl border border-[rgba(0,240,255,0.2)] px-3 py-2 rounded-xl shadow-2xl mb-2">
-        <span className="text-[10px] font-mono font-bold text-[#00F0FF] tracking-wider block">
+      <div className="bg-slate-950/80 backdrop-blur-xl border border-white/20 px-3 py-2 rounded-xl shadow-2xl mb-2">
+        <span className="text-[10px] font-mono font-bold text-white tracking-wider block">
           SCENE TRAVEL CONTROLLER
         </span>
-        <span className="text-xs font-mono font-bold text-white block mt-0.5">
+        <span className="text-xs font-mono font-bold text-slate-300 block mt-0.5">
           {SCENES[activeScene]?.name}
         </span>
       </div>
@@ -62,13 +62,13 @@ export default function SceneCamera() {
               <div
                 className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
                   isActive
-                    ? 'bg-[#00F0FF] shadow-[0_0_12px_#00F0FF] scale-125'
+                    ? 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)] scale-125'
                     : 'bg-slate-700 group-hover:bg-slate-500'
                 }`}
               />
               <span
                 className={`text-[11px] font-mono font-bold transition-colors ${
-                  isActive ? 'text-[#00F0FF]' : 'text-slate-500 group-hover:text-slate-300'
+                  isActive ? 'text-white' : 'text-slate-500 group-hover:text-slate-300'
                 }`}
               >
                 0{idx + 1}

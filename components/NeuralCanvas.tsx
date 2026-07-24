@@ -48,9 +48,9 @@ export default function NeuralCanvas() {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseleave', handleMouseLeave);
 
-    // Particle pool creation
+    // Monochromatic white dust & silver particle pool
     const count = Math.min(Math.floor((width * height) / 12000), 120);
-    const colors = ['#00F0FF', '#A855F7', '#3B82F6', '#10B981'];
+    const colors = ['#FFFFFF', '#E2E8F0', '#CBD5E1', '#94A3B8'];
     const particles: Particle[] = [];
 
     for (let i = 0; i < count; i++) {

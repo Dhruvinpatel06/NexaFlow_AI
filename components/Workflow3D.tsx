@@ -64,13 +64,13 @@ export default function Workflow3D() {
           {/* 3D Animated Pipeline Graphics with Ambient Packet Motion */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center py-6 relative">
             {/* Ambient Data Packet Connection Line */}
-            <div className="hidden md:block absolute top-1/2 left-[25%] right-[25%] h-0.5 bg-gradient-to-r from-[#00F0FF] via-[#A855F7] to-[#10B981] opacity-30 -translate-y-1/2 pointer-events-none z-0">
+            <div className="hidden md:block absolute top-1/2 left-[25%] right-[25%] h-0.5 bg-gradient-to-r from-white via-slate-400 to-slate-600 opacity-30 -translate-y-1/2 pointer-events-none z-0">
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#00F0FF] shadow-[0_0_12px_#00F0FF]"
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-[0_0_12px_#FFFFFF]"
                 style={{ animation: 'packet-travel 3s ease-in-out infinite' }}
               />
               <div
-                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#A855F7] shadow-[0_0_12px_#A855F7]"
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-slate-300 shadow-[0_0_12px_rgba(255,255,255,0.6)]"
                 style={{ animation: 'packet-travel 3s ease-in-out infinite 1.5s' }}
               />
             </div>
@@ -78,19 +78,19 @@ export default function Workflow3D() {
             <div
               className={`p-6 rounded-xl border transition-all duration-500 cursor-pointer ${
                 activeTab === 'input'
-                  ? 'bg-[rgba(0,240,255,0.1)] border-[#00F0FF] shadow-[0_0_30px_rgba(0,240,255,0.25)] scale-105'
+                  ? 'bg-white/10 border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] scale-105'
                   : 'bg-slate-900/50 border-slate-800 opacity-75 hover:opacity-100'
               }`}
               onClick={() => setActiveTab('input')}
             >
-              <div className="w-12 h-12 rounded-xl bg-[rgba(0,240,255,0.15)] border border-[#00F0FF] flex items-center justify-center text-[#00F0FF] mb-4">
+              <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/30 flex items-center justify-center text-white mb-4">
                 <Server className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-mono font-bold text-white mb-2">Ingestion Layer</h3>
               <p className="text-xs text-slate-400 font-sans leading-relaxed">
                 Connect Webhooks, Kafka Streams, PostgreSQL CDC, or REST APIs. Data is normalized instantaneously.
               </p>
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-[#00F0FF]">
+              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-white">
                 <span>200+ Connectors</span>
                 <span>Latency &lt; 5ms</span>
               </div>
@@ -100,13 +100,13 @@ export default function Workflow3D() {
             <div
               className={`p-8 rounded-2xl border transition-all duration-500 cursor-pointer text-center relative ${
                 activeTab === 'core'
-                  ? 'bg-[rgba(168,85,247,0.12)] border-[#A855F7] shadow-[0_0_40px_rgba(168,85,247,0.35)] scale-110'
+                  ? 'bg-white/15 border-white shadow-[0_0_40px_rgba(255,255,255,0.3)] scale-110'
                   : 'bg-slate-900/60 border-slate-800 opacity-75 hover:opacity-100'
               }`}
               onClick={() => setActiveTab('core')}
             >
-              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-[#A855F7] to-[#00F0FF] p-0.5 shadow-[0_0_30px_rgba(168,85,247,0.5)] mb-4 animate-pulse">
-                <div className="w-full h-full bg-[#070D1B] rounded-full flex items-center justify-center text-[#A855F7]">
+              <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-white to-slate-400 p-0.5 shadow-[0_0_30px_rgba(255,255,255,0.4)] mb-4 animate-pulse">
+                <div className="w-full h-full bg-[#070D1B] rounded-full flex items-center justify-center text-white">
                   <Cpu className="w-8 h-8" />
                 </div>
               </div>
@@ -114,7 +114,7 @@ export default function Workflow3D() {
               <p className="text-xs text-slate-300 font-sans leading-relaxed">
                 Autonomous reasoning, sub-agent spawning, dynamic prompt routing, and self-healing error correction.
               </p>
-              <div className="mt-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[rgba(168,85,247,0.2)] text-[#A855F7] border border-[#A855F7] text-[11px] font-mono font-bold">
+              <div className="mt-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white border border-white/30 text-[11px] font-mono font-bold">
                 <Zap className="w-3.5 h-3.5" /> 99.98% Accuracy
               </div>
             </div>

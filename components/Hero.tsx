@@ -60,17 +60,17 @@ export default function Hero() {
       {/* 3D WebGL Neural Mesh Background */}
       <NeuralCanvas />
 
-      {/* Volumetric Aurora Glow Layers */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(0,240,255,0.15),transparent_70%)] pointer-events-none z-0" />
+      {/* Volumetric Soft White Light Layers */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-[radial-gradient(ellipse_100%_70%_at_50%_-20%,rgba(255,255,255,0.06),transparent_70%)] pointer-events-none z-0" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column Content */}
           <div className="lg:col-span-7 space-y-8">
             {/* Top Eyebrow Badge */}
-            <div className="glass inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-[rgba(0,240,255,0.3)] shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-              <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-ping" />
-              <span className="text-xs font-mono font-bold text-[#00F0FF] tracking-wider uppercase flex items-center gap-1.5">
+            <div className="glass inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              <span className="w-2 h-2 rounded-full bg-white animate-ping" />
+              <span className="text-xs font-mono font-bold text-white tracking-wider uppercase flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" /> SCENE 01 // AI CORE INITIALIZED
               </span>
             </div>
@@ -84,15 +84,15 @@ export default function Hero() {
             {/* Code Terminal Box */}
             <div className="max-w-xl bg-slate-950/90 border border-slate-800 rounded-xl p-4 shadow-2xl font-mono text-xs text-slate-300 relative overflow-hidden">
               <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-800 text-[11px] text-slate-500">
-                <span className="flex items-center gap-1.5 text-[#00F0FF] font-bold">
+                <span className="flex items-center gap-1.5 text-white font-bold">
                   <Code className="w-3.5 h-3.5" /> nexaflow_init.ts
                 </span>
                 <span>V8 EDGE RUNTIME</span>
               </div>
               <pre className="text-slate-300 overflow-x-auto leading-relaxed">
                 <code>
-                  <span className="text-[#A855F7]">const</span> agent = <span className="text-[#00F0FF]">new</span> NexaAgent(&#123; pipeline: <span className="text-[#10B981]">&quot;sales_auto_v4&quot;</span> &#125;);{'\n'}
-                  <span className="text-[#A855F7]">await</span> agent.<span className="text-[#00F0FF]">initializeCore</span>(); <span className="text-slate-500">// 12ms SLA</span>
+                  <span className="text-slate-400">const</span> agent = <span className="text-white font-semibold">new</span> NexaAgent(&#123; pipeline: <span className="text-slate-300">&quot;sales_auto_v4&quot;</span> &#125;);{'\n'}
+                  <span className="text-slate-400">await</span> agent.<span className="text-white font-semibold">initializeCore</span>(); <span className="text-slate-500">// 12ms SLA</span>
                 </code>
               </pre>
             </div>
@@ -110,7 +110,7 @@ export default function Hero() {
                 onClick={() => setShowDemoModal(true)}
                 className="btn-premium-outline px-8 py-4 text-xs font-mono font-bold tracking-widest uppercase rounded-xl flex items-center justify-center gap-2 cursor-pointer"
               >
-                <Play className="w-4 h-4 fill-[#00F0FF]" /> Watch 2-Min Demo
+                <Play className="w-4 h-4 fill-white" /> Watch 2-Min Demo
               </button>
             </div>
 
@@ -124,7 +124,7 @@ export default function Hero() {
                   {[...COMPANIES, ...COMPANIES, ...COMPANIES].map((company, index) => (
                     <span key={index} className="flex items-center gap-4 text-slate-400 font-mono text-sm font-semibold">
                       <span>{company}</span>
-                      <span className="text-[#00F0FF]/40">·</span>
+                      <span className="text-white/30">·</span>
                     </span>
                   ))}
                 </div>
@@ -135,17 +135,17 @@ export default function Hero() {
           {/* Right Column - 3D Dashboard Mockup Card */}
           <div className="lg:col-span-5 relative" style={{ perspective: '1200px' }}>
             <div
-              className="glass-card rounded-2xl p-6 border border-[rgba(0,240,255,0.25)] shadow-[0_0_50px_rgba(0,0,0,0.7)] relative overflow-hidden transition-all duration-300 cursor-pointer"
+              className="glass-card rounded-2xl p-6 border border-white/15 shadow-[0_0_50px_rgba(0,0,0,0.8)] relative overflow-hidden transition-all duration-300 cursor-pointer"
               onMouseMove={handleMouseMoveMockup}
               onMouseLeave={handleMouseLeaveMockup}
             >
               {/* Header */}
               <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-800">
-                <div className="flex items-center gap-2 font-mono text-xs font-bold text-[#00F0FF]">
+                <div className="flex items-center gap-2 font-mono text-xs font-bold text-white">
                   <Cpu className="w-4 h-4" /> NEXAFLOW RUNTIME HUB
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[10px] font-mono font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" /> LIVE STREAM
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> LIVE STREAM
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ export default function Hero() {
               <div className="space-y-3 font-mono">
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <Zap className="w-4 h-4 text-[#00F0FF]" />
+                    <Zap className="w-4 h-4 text-white" />
                     <span className="text-xs text-slate-400">Workflows Executed</span>
                   </div>
                   <span className="text-base font-bold text-white">
@@ -163,20 +163,20 @@ export default function Hero() {
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <Shield className="w-4 h-4 text-[#A855F7]" />
+                    <Shield className="w-4 h-4 text-slate-300" />
                     <span className="text-xs text-slate-400">Automation Accuracy</span>
                   </div>
-                  <span className="text-base font-bold text-[#00F0FF]">
+                  <span className="text-base font-bold text-white">
                     <MockupCounter target={99.98} suffix="%" decimals={2} />
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800">
                   <div className="flex items-center gap-2.5">
-                    <Cpu className="w-4 h-4 text-[#10B981]" />
+                    <Cpu className="w-4 h-4 text-slate-300" />
                     <span className="text-xs text-slate-400">Avg Execution Latency</span>
                   </div>
-                  <span className="text-base font-bold text-[#10B981]">
+                  <span className="text-base font-bold text-white">
                     <MockupCounter target={14.2} suffix="ms" decimals={1} />
                   </span>
                 </div>
@@ -195,8 +195,8 @@ export default function Hero() {
                       style={{ height: `${h}%` }}
                       className={`flex-1 rounded-t transition-all duration-300 ${
                         i === 7
-                          ? 'bg-gradient-to-t from-[#00F0FF] to-[#A855F7] shadow-[0_0_12px_#00F0FF]'
-                          : 'bg-slate-800 hover:bg-[#00F0FF]/40'
+                          ? 'bg-gradient-to-t from-white to-slate-400 shadow-[0_0_12px_rgba(255,255,255,0.5)]'
+                          : 'bg-slate-800 hover:bg-white/40'
                       }`}
                     />
                   ))}

@@ -92,7 +92,7 @@ export default function SpotlightCursor() {
           opacity: isIdle ? 0.25 : isHovered ? 0.85 : 0.6,
         }}
         transition={{ duration: 0.2 }}
-        className="w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle_at_center,rgba(0,240,255,0.18)_0%,rgba(168,85,247,0.08)_40%,transparent_70%)] blur-2xl"
+        className="w-[300px] h-[300px] rounded-full bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.05)_40%,transparent_70%)] blur-2xl"
       />
 
       {/* Main VisionOS Glowing Circular Pointer Dot */}
@@ -114,8 +114,8 @@ export default function SpotlightCursor() {
         <div
           className={`w-3.5 h-3.5 rounded-full transition-colors duration-200 ${
             isHovered
-              ? 'bg-[#00F0FF] shadow-[0_0_20px_#00F0FF,0_0_40px_#00F0FF]'
-              : 'bg-white shadow-[0_0_12px_#00F0FF]'
+              ? 'bg-white shadow-[0_0_20px_#FFFFFF,0_0_40px_#FFFFFF]'
+              : 'bg-white shadow-[0_0_12px_rgba(255,255,255,0.8)]'
           }`}
         />
 
@@ -123,8 +123,8 @@ export default function SpotlightCursor() {
         <div
           className={`absolute w-9 h-9 rounded-full border transition-all duration-200 ${
             isHovered
-              ? 'border-[#00F0FF] bg-[rgba(0,240,255,0.15)] scale-110'
-              : 'border-[rgba(0,240,255,0.4)] bg-transparent'
+              ? 'border-white bg-[rgba(255,255,255,0.15)] scale-110'
+              : 'border-[rgba(255,255,255,0.4)] bg-transparent'
           }`}
         />
       </motion.div>
