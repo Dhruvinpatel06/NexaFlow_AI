@@ -2,26 +2,28 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-// Upgraded counter with tick-up animation on mount
+// Hero mockup metric counter with 600ms delay on mount before starting
 function MockupCounter({ target, suffix = '', decimals = 0, duration = 1500 }: { target: number; suffix?: string; decimals?: number; duration?: number }) {
   const [val, setVal] = useState(0);
 
   useEffect(() => {
-    const startTime = performance.now();
-    let aniFrame: number;
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeProgress = progress * (2 - progress); // easeOutQuad
-      setVal(easeProgress * target);
-      if (progress < 1) {
-        aniFrame = requestAnimationFrame(animate);
-      } else {
-        setVal(target);
-      }
-    };
-    aniFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(aniFrame);
+    const timer = setTimeout(() => {
+      const startTime = performance.now();
+      let aniFrame: number;
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeProgress = progress * (2 - progress); // easeOutQuad
+        setVal(easeProgress * target);
+        if (progress < 1) {
+          aniFrame = requestAnimationFrame(animate);
+        } else {
+          setVal(target);
+        }
+      };
+      aniFrame = requestAnimationFrame(animate);
+    }, 600);
+    return () => clearTimeout(timer);
   }, [target, duration]);
 
   const formatted = decimals > 0 
@@ -33,11 +35,14 @@ function MockupCounter({ target, suffix = '', decimals = 0, duration = 1500 }: {
   );
 }
 
+const COMPANIES = ['Notion', 'Stripe', 'Linear', 'Vercel', 'Figma', 'Atlassian'];
+
 export default function Hero() {
   const badgeRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const ctasRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLDivElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
   const [showDemoModal, setShowDemoModal] = useState(false);
 
@@ -66,6 +71,7 @@ export default function Hero() {
       { ref: titleRef, delay: 160 },
       { ref: subtitleRef, delay: 240 },
       { ref: ctasRef, delay: 320 },
+      { ref: marqueeRef, delay: 360 },
       { ref: mockupRef, delay: 400 },
     ];
     elements.forEach(({ ref, delay }) => {
@@ -80,7 +86,7 @@ export default function Hero() {
     <section
       id="hero"
       aria-label="Hero"
-      className="hero-bg noise-overlay relative w-full py-24 md:py-32 overflow-hidden"
+      className="hero-bg noise-overlay relative w-full pt-32 pb-24 md:pt-36 md:pb-32 overflow-hidden"
       style={{
         backgroundColor: 'var(--surface)',
         backgroundImage: `
@@ -90,74 +96,119 @@ export default function Hero() {
         `,
       }}
     >
-      {/* Premium Upgrades: 3 drifting background orbs */}
-      <div 
+      {/* 3 CSS Floating Orb Decorations */}
+      <div
         style={{
-          position: 'absolute', width: '600px', height: '600px', top: '-200px', left: '-150px',
-          background: 'radial-gradient(circle, rgba(255,200,1,0.12) 0%, transparent 70%)',
-          animation: 'orb-drift 12s ease-in-out infinite', pointerEvents: 'none', zIndex: 0
-        }} 
+          width: 600,
+          height: 600,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,200,1,0.08) 0%, transparent 70%)',
+          position: 'absolute',
+          top: -200,
+          left: -200,
+          animation: 'float 8s ease-in-out infinite',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
       />
-      <div 
+      <div
         style={{
-          position: 'absolute', width: '500px', height: '500px', top: '100px', right: '-100px',
-          background: 'radial-gradient(circle, rgba(17,76,90,0.25) 0%, transparent 70%)',
-          animation: 'orb-drift 16s ease-in-out infinite reverse', pointerEvents: 'none', zIndex: 0
-        }} 
+          width: 400,
+          height: 400,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(255,154,50,0.06) 0%, transparent 70%)',
+          position: 'absolute',
+          bottom: -100,
+          right: -100,
+          animation: 'float 6s ease-in-out infinite reverse',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
       />
-      <div 
+      <div
         style={{
-          position: 'absolute', width: '400px', height: '400px', bottom: '-100px', left: '30%',
-          background: 'radial-gradient(circle, rgba(255,153,50,0.08) 0%, transparent 70%)',
-          animation: 'orb-drift 20s ease-in-out infinite', pointerEvents: 'none', zIndex: 0
-        }} 
+          width: 300,
+          height: 300,
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(17,76,90,0.15) 0%, transparent 70%)',
+          position: 'absolute',
+          top: '40%',
+          left: '40%',
+          animation: 'float 10s ease-in-out infinite 2s',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
       />
 
       <div className="hero-content relative z-10 max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 items-center">
           {/* Left Column */}
           <div className="md:col-span-3 space-y-8">
-            {/* Pill Badge */}
+            {/* Eyebrow Badge with shimmer animation */}
             <div
               ref={badgeRef}
-              className="badge-shimmer inline-flex items-center gap-2 px-4 py-2 rounded-full relative"
-              style={{ backgroundColor: 'rgba(255, 200, 1, 0.08)', border: '1px solid rgba(255, 200, 1, 0.4)' }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full relative overflow-hidden"
+              style={{
+                background: 'linear-gradient(90deg, rgba(255,200,1,0.08) 0%, rgba(255,200,1,0.2) 50%, rgba(255,200,1,0.08) 100%)',
+                backgroundSize: '200% auto',
+                animation: 'badge-shimmer 3s linear infinite',
+                border: '1px solid rgba(255, 200, 1, 0.4)',
+              }}
             >
-              <div style={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: 'var(--primary)', boxShadow: '0 0 6px var(--primary)', animation: 'pulse-glow 2s ease-in-out infinite', flexShrink: 0 }} />
+              <div
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--primary)',
+                  boxShadow: '0 0 6px var(--primary)',
+                  animation: 'pulse-glow 2s ease-in-out infinite',
+                  flexShrink: 0,
+                }}
+              />
               <span style={{ color: 'var(--primary)' }} className="text-sm font-medium relative z-10">
                 ✦ AI-Powered Automation — Now in Public Beta
               </span>
             </div>
 
-            {/* H1 */}
+            {/* H1 Split into two lines */}
             <h1
               ref={titleRef}
               className="leading-tight animate-fade-in"
               style={{ fontFamily: 'var(--font-mono)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', letterSpacing: '-0.03em' }}
             >
-              <span className="block text-white font-black" style={{ fontWeight: 900 }}>Automate Everything.</span>
+              <span className="block text-white font-black" style={{ fontWeight: 900 }}>
+                Automate Everything.
+              </span>
               <span
                 className="block font-black"
                 style={{
                   fontWeight: 900,
-                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9932 50%, #FFC801 100%)',
-                  WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                  backgroundSize: '200% auto', animation: 'shimmer 4s linear infinite',
+                  background: 'linear-gradient(135deg, #FFC801 0%, #FF9A32 50%, #FFC801 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  backgroundSize: '200% auto',
+                  animation: 'shimmer-text 4s linear infinite',
                 }}
               >
                 Scale Infinitely.
               </span>
             </h1>
 
-            {/* Subheading — Opacity 0.75 for readability */}
+            {/* Subheading */}
             <p
               ref={subtitleRef}
               className="max-w-lg"
               style={{
-                fontSize: '1.125rem', lineHeight: 1.7,
-                borderLeft: '3px solid var(--primary)', paddingLeft: '16px',
+                fontSize: '1.125rem',
+                lineHeight: 1.7,
+                borderLeft: '3px solid var(--primary)',
+                paddingLeft: '16px',
                 background: 'linear-gradient(90deg, rgba(255,200,1,0.06) 0%, transparent 100%)',
-                borderRadius: '0 6px 6px 0', paddingTop: '8px', paddingBottom: '8px',
+                borderRadius: '0 6px 6px 0',
+                paddingTop: '8px',
+                paddingBottom: '8px',
                 color: 'rgba(255, 255, 255, 0.75)',
               }}
             >
@@ -167,7 +218,7 @@ export default function Hero() {
             {/* CTA Buttons */}
             <div ref={ctasRef} className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
-                className="btn-premium-primary font-semibold"
+                className="btn-premium-primary font-semibold focus-ring"
                 style={{ padding: '14px 32px' }}
                 onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
               >
@@ -175,12 +226,45 @@ export default function Hero() {
               </button>
 
               <button
-                className="btn-premium-outline font-semibold"
+                className="btn-premium-outline font-semibold focus-ring"
                 style={{ padding: '14px 32px' }}
                 onClick={() => setShowDemoModal(true)}
               >
                 Watch Demo →
               </button>
+            </div>
+
+            {/* Scrolling Trust Marquee Row */}
+            <div ref={marqueeRef} className="pt-6 space-y-3">
+              <p
+                style={{
+                  color: 'rgba(255,255,255,0.3)',
+                  fontFamily: 'var(--font-inter)',
+                  fontWeight: 500,
+                  letterSpacing: '0.15em',
+                  fontSize: '0.6875rem',
+                  textTransform: 'uppercase',
+                }}
+              >
+                POWERING TEAMS AT
+              </p>
+              <div className="w-full overflow-hidden" style={{ maskImage: 'linear-gradient(90deg, transparent, black 15%, black 85%, transparent)' }}>
+                <div
+                  className="flex gap-12 items-center w-max"
+                  style={{
+                    animation: 'marquee 25s linear infinite',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.animationPlayState = 'paused')}
+                  onMouseLeave={(e) => (e.currentTarget.style.animationPlayState = 'running')}
+                >
+                  {[...COMPANIES, ...COMPANIES, ...COMPANIES].map((company, index) => (
+                    <span key={index} className="flex items-center gap-4 text-white/35 font-semibold text-base" style={{ fontFamily: 'var(--font-inter)' }}>
+                      <span>{company}</span>
+                      <span style={{ color: 'rgba(255,200,1,0.5)' }}>·</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -188,16 +272,23 @@ export default function Hero() {
           <div ref={mockupRef} className="md:col-span-2 relative h-96 md:h-full hidden md:block">
             <div
               className="rounded-2xl p-[1px] w-full max-w-sm mx-auto h-full"
-              style={{ background: 'linear-gradient(135deg, rgba(255, 200, 1, 0.3), rgba(255, 154, 50, 0.1))', animation: 'float 3s ease-in-out infinite', boxShadow: '0 0 60px rgba(255, 200, 1, 0.15), 0 40px 80px rgba(0, 0, 0, 0.5)' }}
+              style={{
+                background: 'linear-gradient(135deg, rgba(255, 200, 1, 0.3), rgba(255, 154, 50, 0.1))',
+                animation: 'float 3s ease-in-out infinite',
+                outline: '1px solid rgba(255,200,1,0.2)',
+                boxShadow:
+                  '0 0 0 1px rgba(255,200,1,0.1), 0 30px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,200,1,0.08)',
+              }}
             >
-              <div 
-                className="rounded-2xl p-6 w-full h-full relative overflow-hidden cursor-pointer" 
-                style={{ 
+              <div
+                className="rounded-2xl p-6 w-full h-full relative overflow-hidden cursor-pointer flex flex-col justify-between"
+                style={{
                   backgroundColor: 'var(--surface)',
-                  backgroundImage: 'linear-gradient(rgba(255,200,1,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,200,1,0.03) 1px, transparent 1px)',
+                  backgroundImage:
+                    'linear-gradient(rgba(255,200,1,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,200,1,0.03) 1px, transparent 1px)',
                   backgroundSize: '20px 20px',
                   transformStyle: 'preserve-3d',
-                  willChange: 'transform'
+                  willChange: 'transform',
                 }}
                 onMouseMove={handleMouseMoveMockup}
                 onMouseLeave={handleMouseLeaveMockup}
@@ -208,13 +299,13 @@ export default function Hero() {
                 </div>
 
                 {/* Frosted Glass Header Bar */}
-                <div 
-                  className="flex items-center justify-between px-4 py-2.5 -mx-6 -mt-6 mb-5" 
-                  style={{ 
-                    background: 'rgba(255,255,255,0.04)', 
-                    borderBottom: '1px solid rgba(255,255,255,0.08)', 
+                <div
+                  className="flex items-center justify-between px-4 py-2.5 -mx-6 -mt-6 mb-4"
+                  style={{
+                    background: 'rgba(255,255,255,0.04)',
+                    borderBottom: '1px solid rgba(255,255,255,0.08)',
                     backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)'
+                    WebkitBackdropFilter: 'blur(10px)',
                   }}
                 >
                   <div className="flex gap-1.5">
@@ -229,17 +320,17 @@ export default function Hero() {
                   </div>
                 </div>
 
-                <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'Inter', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '12px' }}>Automation Overview</p>
-                
-                {/* Metric rows with javascript mount counters */}
+                <p style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', fontFamily: 'Inter', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>Automation Overview</p>
+
+                {/* Metric rows with 600ms delayed counters */}
                 {[
                   { icon: '⚡', label: 'Workflows Run Today', value: 12847, suffix: '', decimals: 0, color: 'var(--primary)', pct: 82 },
                   { icon: '📈', label: 'Automation Rate', value: 94.2, suffix: '%', decimals: 1, color: 'var(--warm)', pct: 94 },
                   { icon: '⏱', label: 'Time Saved', value: 3.2, suffix: 'h avg', decimals: 1, color: '#4ade80', pct: 67 },
                 ].map((m) => (
-                  <div key={m.label} style={{ marginBottom: '14px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: 'rgba(255,200,1,0.12)', border: '1px solid rgba(255,200,1,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{m.icon}</div>
+                  <div key={m.label} style={{ marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <div style={{ width: 26, height: 26, borderRadius: '8px', backgroundColor: 'rgba(255,200,1,0.12)', border: '1px solid rgba(255,200,1,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', flexShrink: 0 }}>{m.icon}</div>
                       <p style={{ flex: 1, fontSize: '0.65rem', color: 'rgba(255,255,255,0.45)', fontFamily: 'Inter' }}>{m.label}</p>
                       <span style={{ fontSize: '0.75rem', fontWeight: 700, color: m.color, fontFamily: 'var(--font-mono)' }}>
                         <MockupCounter target={m.value} suffix={m.suffix} decimals={m.decimals} />
@@ -251,23 +342,29 @@ export default function Hero() {
                   </div>
                 ))}
 
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 52, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.05)', marginTop: 8 }}>
-                  {[38, 58, 42, 75, 50, 68, 44, 80].map((h, i) => (
-                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                      <div style={{ width: '100%', height: 3, background: 'linear-gradient(90deg,rgba(255,200,1,0.9),rgba(255,153,50,0.7))', borderRadius: '2px 2px 0 0', transform: 'skewX(-15deg)', marginBottom: -1, zIndex: 1 }} />
-                      <div style={{ width: '100%', height: `${h * 0.6}px`, background: i % 2 === 0 ? 'linear-gradient(180deg,rgba(255,200,1,0.75) 0%,rgba(255,200,1,0.2) 100%)' : 'linear-gradient(180deg,rgba(17,76,90,0.7) 0%,rgba(17,76,90,0.2) 100%)', borderRadius: '2px 2px 0 0' }} />
-                    </div>
+                {/* 5-bar mini chart at bottom */}
+                <div style={{ display: 'flex', gap: 4, alignItems: 'flex-end', height: 40, padding: '0 0.5rem 0.5rem', marginTop: 8 }}>
+                  {[60, 80, 45, 90, 75].map((h, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        flex: 1,
+                        height: `${h}%`,
+                        borderRadius: '3px 3px 0 0',
+                        background: i === 3 ? 'var(--primary)' : 'rgba(255,200,1,0.3)',
+                        transition: 'height 1s ease-out',
+                        animationDelay: `${i * 0.1}s`,
+                      }}
+                    />
                   ))}
                 </div>
-                <div style={{ position: 'absolute', bottom: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,200,1,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                <div style={{ position: 'absolute', top: -20, left: -20, width: 100, height: 100, borderRadius: '50%', background: 'radial-gradient(circle, rgba(17,76,90,0.3) 0%, transparent 70%)', pointerEvents: 'none' }} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Demo Modal — Fix #11 */}
+      {/* Demo Modal */}
       {showDemoModal && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center"
@@ -279,7 +376,6 @@ export default function Hero() {
             style={{ background: 'var(--surface)', border: '1px solid rgba(255,200,1,0.3)', boxShadow: '0 32px 64px rgba(0,0,0,0.5)' }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button */}
             <button
               onClick={() => setShowDemoModal(false)}
               className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center text-white text-lg"
@@ -288,7 +384,6 @@ export default function Hero() {
             >
               ×
             </button>
-            {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3" style={{ background: 'rgba(0,0,0,0.3)' }}>
               <div className="flex gap-1.5">
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ef4444' }} />
@@ -299,7 +394,6 @@ export default function Hero() {
                 app.nexaflow.ai/dashboard
               </div>
             </div>
-            {/* Demo content */}
             <div className="p-12 text-center">
               <div
                 className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center cursor-pointer"
@@ -311,7 +405,10 @@ export default function Hero() {
               <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Full product demo coming soon. Join the beta to get early access.</p>
               <button
                 className="btn-premium-primary mt-6 px-6 py-3"
-                onClick={() => { setShowDemoModal(false); document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }); }}
+                onClick={() => {
+                  setShowDemoModal(false);
+                  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                }}
               >
                 Join Beta →
               </button>

@@ -4,17 +4,66 @@ import { useState, useEffect } from 'react';
 import { Search } from './icons/Search';
 import { XMark } from './icons/XMark';
 
+const NAV_ITEMS = [
+  { id: 'platform', label: 'Platform' },
+  { id: 'features', label: 'Features' },
+  { id: 'pricing', label: 'Pricing' },
+  { id: 'about', label: 'About' },
+];
+
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [bannerClosed, setBannerClosed] = useState(true);
+
+  // Read banner closed state from sessionStorage on mount
+  useEffect(() => {
+    const isClosed = sessionStorage.getItem('nexaflow_announcement_closed');
+    if (!isClosed) {
+      setBannerClosed(false);
+    }
+  }, []);
+
+  const closeBanner = () => {
+    setBannerClosed(true);
+    sessionStorage.setItem('nexaflow_announcement_closed', 'true');
+  };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // IntersectionObserver for active navigation link dot
+  useEffect(() => {
+    const sectionIds = ['hero', 'platform', 'features', 'pricing', 'about'];
+    const observers: IntersectionObserver[] = [];
+
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(id);
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+
+    return () => observers.forEach((obs) => obs.disconnect());
   }, []);
 
   // Dark mode: read from localStorage on mount
@@ -41,7 +90,9 @@ export default function Navbar() {
   // Close search on Escape
   useEffect(() => {
     if (!isSearchOpen) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsSearchOpen(false); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsSearchOpen(false);
+    };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [isSearchOpen]);
@@ -51,34 +102,66 @@ export default function Navbar() {
     setMobileMenuOpen(false);
   };
 
-  const linkColor = isDark ? 'white' : (scrolled ? 'var(--dark)' : 'white');
+  const linkColor = isDark ? 'white' : scrolled ? 'var(--dark)' : 'white';
   const navBgColor = scrolled
-    ? (isDark ? 'rgba(23,43,54,0.96)' : 'rgba(241,246,244,0.92)')
-    : (isDark ? 'rgba(17,76,90,0.15)' : 'rgba(23,43,54,0.0)');
-  const uiColor = isDark ? 'white' : (scrolled ? 'var(--text)' : 'white');
+    ? isDark
+      ? 'rgba(23,43,54,0.92)'
+      : 'rgba(241,245,244,0.92)'
+    : isDark
+    ? 'rgba(17,76,90,0.15)'
+    : 'rgba(23,43,54,0.0)';
+  const uiColor = isDark ? 'white' : scrolled ? 'var(--text)' : 'white';
 
   return (
-    <>
+    <header className="fixed top-0 left-0 right-0 z-50 flex flex-col pointer-events-none">
+      {/* Announcement Bar ABOVE Navbar */}
+      <div
+        className="pointer-events-auto w-full transition-all duration-300 ease-in-out cursor-pointer overflow-hidden flex items-center justify-center relative"
+        style={{
+          height: bannerClosed ? 0 : 36,
+          background: 'linear-gradient(90deg, var(--dark), #1a5f73)',
+          transform: bannerClosed ? 'translateY(-100%)' : 'translateY(0)',
+          opacity: bannerClosed ? 0 : 1,
+        }}
+        onClick={closeBanner}
+      >
+        <div className="flex items-center justify-center text-center w-full px-4" style={{ color: 'white', fontFamily: 'var(--font-inter)', fontWeight: 500, fontSize: '0.8125rem' }}>
+          <span>
+            🎉 NexaFlow raises $12M Series A — Read the announcement{' '}
+            <span style={{ color: 'var(--primary)', fontWeight: 600 }}>→</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
       <nav
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-out"
+        className="pointer-events-auto w-full transition-all duration-300 ease-out"
         style={{
           backgroundColor: navBgColor,
-          borderBottom: scrolled ? (isDark ? '1px solid rgba(255,200,1,0.15)' : '1px solid rgba(255,200,1,0.25)') : '1px solid transparent',
+          borderBottom: scrolled
+            ? isDark
+              ? '1px solid rgba(255,200,1,0.15)'
+              : '1px solid rgba(255,200,1,0.2)'
+            : '1px solid transparent',
           boxShadow: scrolled ? '0 4px 24px rgba(17,76,90,0.08)' : 'none',
-          backdropFilter: scrolled ? 'blur(12px)' : (isDark ? 'blur(20px)' : 'none'),
-          WebkitBackdropFilter: scrolled ? 'blur(12px)' : (isDark ? 'blur(20px)' : 'none'),
+          backdropFilter: scrolled ? 'blur(16px)' : isDark ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(16px)' : isDark ? 'blur(20px)' : 'none',
         }}
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => scrollTo('hero')}>
             <div style={{ position: 'relative', width: 10, height: 10, flexShrink: 0 }}>
-              <div style={{
-                width: 10, height: 10, borderRadius: '50%',
-                backgroundColor: 'var(--primary)',
-                boxShadow: '0 0 0 3px rgba(255,200,1,0.2), 0 0 12px rgba(255,200,1,0.5)',
-                animation: 'pulse-glow 2s ease-in-out infinite',
-              }} />
+              <div
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--primary)',
+                  boxShadow: '0 0 0 3px rgba(255,200,1,0.2), 0 0 12px rgba(255,200,1,0.5)',
+                  animation: 'pulse-glow 2s ease-in-out infinite',
+                }}
+              />
             </div>
             <span className="font-bold text-lg" style={{ color: 'var(--primary)', fontFamily: 'var(--font-mono)' }}>
               NexaFlow
@@ -87,25 +170,44 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#platform" onClick={(e) => { e.preventDefault(); scrollTo('platform'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
-              Platform
-            </a>
-            <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
-              Features
-            </a>
-            <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollTo('pricing'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
-              Pricing
-            </a>
-            <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }} className="nav-link text-sm font-medium" style={{ color: linkColor }}>
-              About
-            </a>
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollTo(item.id);
+                  }}
+                  className="nav-link text-sm font-medium relative"
+                  style={{ color: linkColor }}
+                >
+                  {item.label}
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: -4,
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 4,
+                      height: 4,
+                      borderRadius: '50%',
+                      background: 'var(--primary)',
+                      opacity: isActive ? 1 : 0,
+                      transition: 'opacity 200ms ease-out',
+                    }}
+                  />
+                </a>
+              );
+            })}
           </div>
 
           {/* Right Section */}
           <div className="flex items-center gap-3">
             {/* Search */}
             <button
-              className="p-2 rounded-lg hover:opacity-70 transition-opacity"
+              className="p-2 rounded-lg hover:opacity-70 transition-opacity focus-ring"
               aria-label="Search"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
@@ -114,19 +216,25 @@ export default function Navbar() {
 
             {/* Dark mode toggle */}
             <button
-              className="p-2 rounded-lg hover:opacity-70 transition-all duration-200"
+              className="p-2 rounded-lg hover:opacity-70 transition-all duration-200 focus-ring"
               aria-label="Toggle dark mode"
               onClick={toggleDark}
               style={{ fontSize: '1.1rem' }}
             >
-              <span style={{ display: 'inline-block', transition: 'transform 200ms ease-out', transform: isDark ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+              <span
+                style={{
+                  display: 'inline-block',
+                  transition: 'transform 200ms ease-out',
+                  transform: isDark ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
+              >
                 {isDark ? '☀️' : '🌙'}
               </span>
             </button>
 
             {/* Get Started CTA */}
             <button
-              className="btn-premium-primary hidden md:inline-block"
+              className="btn-premium-primary hidden md:inline-block focus-ring"
               style={{ padding: '10px 24px' }}
               onClick={() => scrollTo('pricing')}
             >
@@ -135,7 +243,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-2"
+              className="md:hidden p-2 focus-ring"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -153,26 +261,30 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Search Bar Dropdown — Fix #20 */}
+      {/* Search Bar Dropdown */}
       {isSearchOpen && (
         <div
-          className="fixed top-16 left-0 right-0 z-40 px-6 py-3"
-          style={{ backgroundColor: 'var(--bg)', borderBottom: '1px solid rgba(255,200,1,0.2)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}
+          className="pointer-events-auto w-full px-6 py-3"
+          style={{
+            backgroundColor: 'var(--bg)',
+            borderBottom: '1px solid rgba(255,200,1,0.2)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
+          }}
         >
           <input
             autoFocus
             placeholder="Search features, pricing, docs..."
-            className="w-full max-w-2xl mx-auto block px-4 py-2 rounded-xl"
+            className="w-full max-w-2xl mx-auto block px-4 py-2 rounded-xl text-sm"
             style={{ background: 'white', border: '2px solid var(--primary)', outline: 'none', color: 'var(--text)' }}
             onKeyDown={(e) => e.key === 'Escape' && setIsSearchOpen(false)}
           />
         </div>
       )}
 
-      {/* Mobile Menu Overlay — Fix #15: close on link click */}
+      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
-          className="fixed inset-0 top-16 z-40 backdrop-blur-sm md:hidden"
+          className="pointer-events-auto fixed inset-0 top-16 z-40 backdrop-blur-sm md:hidden"
           onClick={() => setMobileMenuOpen(false)}
           style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
         >
@@ -181,10 +293,20 @@ export default function Navbar() {
             onClick={(e) => e.stopPropagation()}
             style={{ borderColor: 'var(--primary)' }}
           >
-            <a href="#platform" onClick={(e) => { e.preventDefault(); scrollTo('platform'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Platform</a>
-            <a href="#features" onClick={(e) => { e.preventDefault(); scrollTo('features'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Features</a>
-            <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollTo('pricing'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>Pricing</a>
-            <a href="#about" onClick={(e) => { e.preventDefault(); scrollTo('about'); }} className="text-sm font-medium" style={{ color: 'var(--text)' }}>About</a>
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollTo(item.id);
+                }}
+                className="text-sm font-medium"
+                style={{ color: 'var(--text)' }}
+              >
+                {item.label}
+              </a>
+            ))}
             <button
               className="btn-premium-primary px-4 py-2 w-full"
               onClick={() => scrollTo('pricing')}
@@ -194,6 +316,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </>
+    </header>
   );
 }

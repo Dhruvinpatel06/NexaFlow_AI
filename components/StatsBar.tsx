@@ -10,6 +10,7 @@ const STATS = [
 
 function Counter({ target, suffix, isInteger }: { target: number; suffix: string; isInteger: boolean }) {
   const [count, setCount] = useState(0);
+  const [isFinished, setIsFinished] = useState(false);
   const hasRun = useRef(false);
   const elementRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +27,7 @@ function Counter({ target, suffix, isInteger }: { target: number; suffix: string
             current += stepValue;
             if (current >= target) {
               setCount(target);
+              setIsFinished(true);
               clearInterval(interval);
             } else {
               setCount(current);
@@ -39,27 +41,33 @@ function Counter({ target, suffix, isInteger }: { target: number; suffix: string
     return () => observer.disconnect();
   }, [target]);
 
-  // Fix #12: proper decimal formatting
   const displayValue = isInteger
     ? Math.floor(count).toLocaleString()
     : count.toFixed(2);
 
   return (
-    <span ref={elementRef}>
+    <span ref={elementRef} className={isFinished ? 'count-done-anim inline-block' : 'inline-block'}>
       {displayValue}
-      <span style={{ color: 'var(--warm)', fontSize: '0.6em', marginLeft: '4px' }}>↑</span>
       {suffix}
+      <span style={{ color: 'var(--warm)', fontSize: '0.75rem', marginLeft: 4, verticalAlign: 'super' }}>↑</span>
     </span>
   );
 }
 
 export default function StatsBar() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
-  // Fix #14: reveal on scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => { entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }); },
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            e.target.classList.add('in-view');
+          }
+        });
+      },
       { threshold: 0.15 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -70,7 +78,7 @@ export default function StatsBar() {
     <section
       id="platform"
       aria-label="Statistics"
-      className="py-16 px-6"
+      className="py-16 px-6 relative"
       style={{
         backgroundColor: 'var(--accent)',
         backgroundImage: `
@@ -83,48 +91,93 @@ export default function StatsBar() {
       }}
     >
       <div style={{ height: 3, width: '100%', background: 'linear-gradient(90deg, var(--dark), var(--primary), var(--warm), var(--primary), var(--dark))', backgroundSize: '200% auto', animation: 'shimmer 4s linear infinite', marginBottom: '2rem' }} />
-      <div ref={sectionRef} className="max-w-7xl mx-auto reveal">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div ref={sectionRef} className="max-w-7xl mx-auto reveal reveal-up">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {STATS.map((stat, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col items-center justify-center text-center p-8 relative glass-card card-depth"
-              style={{
-                borderRadius: '20px',
-                border: '1px solid rgba(255, 200, 1, 0.15)',
-                transformStyle: 'preserve-3d',
-                willChange: 'transform',
-                transition: 'transform 300ms ease, box-shadow 300ms ease',
-                cursor: 'pointer',
-              }}
-              onMouseMove={(e) => {
-                const card = e.currentTarget;
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -4;
-                const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 4;
-                card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
-              }}
-              onMouseLeave={(e) => {
-                const card = e.currentTarget;
-                card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
-              }}
-            >
-              <div className="mb-3" style={{ width: '40px', height: '3px', backgroundColor: 'var(--primary)', transform: 'translateZ(10px)' }} />
+            <div key={idx} className="flex-1 w-full flex items-center gap-6">
               <div
-                className="text-5xl md:text-6xl font-black mb-2"
+                className="flex-1 flex flex-col items-center justify-center text-center p-8 relative glass-card card-depth"
                 style={{
-                  color: 'var(--dark)', fontFamily: 'var(--font-mono)', lineHeight: 1,
-                  fontSize: 'clamp(2.5rem, 4.5vw, 3.5rem)', textShadow: '0 4px 24px rgba(17,76,90,0.12)', letterSpacing: '-0.04em',
-                  transform: 'translateZ(20px)',
+                  borderRadius: '20px',
+                  border: '1px solid rgba(255, 200, 1, 0.15)',
+                  transformStyle: 'preserve-3d',
+                  willChange: 'transform',
+                  transition: 'transform 300ms ease, box-shadow 300ms ease',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={() => setHoveredIdx(idx)}
+                onMouseLeave={(e) => {
+                  setHoveredIdx(null);
+                  const card = e.currentTarget;
+                  card.style.transform = 'perspective(600px) rotateX(0deg) rotateY(0deg) scale(1)';
+                }}
+                onMouseMove={(e) => {
+                  const card = e.currentTarget;
+                  const rect = card.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -4;
+                  const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 4;
+                  card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
                 }}
               >
-                <Counter target={stat.value} suffix={stat.suffix} isInteger={stat.isInteger} />
+                {/* Top accent line above stat number */}
+                <div
+                  style={{
+                    width: 32,
+                    height: 3,
+                    borderRadius: 2,
+                    background: 'var(--primary)',
+                    marginBottom: 12,
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                  }}
+                />
+
+                <div
+                  className="text-5xl md:text-6xl font-black mb-2 transition-all duration-200"
+                  style={{
+                    color: 'var(--dark)',
+                    fontFamily: 'var(--font-mono)',
+                    lineHeight: 1,
+                    fontSize: 'clamp(2.5rem, 4.5vw, 3.5rem)',
+                    letterSpacing: '-0.04em',
+                    transform: 'translateZ(20px)',
+                    textShadow: hoveredIdx === idx ? '0 0 20px rgba(255,200,1,0.5)' : '0 4px 24px rgba(17,76,90,0.12)',
+                  }}
+                >
+                  <Counter target={stat.value} suffix={stat.suffix} isInteger={stat.isInteger} />
+                </div>
+
+                <p
+                  style={{
+                    color: 'var(--dark)',
+                    fontFamily: 'var(--font-sans)',
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    opacity: 0.7,
+                    transform: 'translateZ(10px)',
+                  }}
+                >
+                  {stat.label}
+                </p>
               </div>
-              <p style={{ color: 'var(--dark)', fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.7, transform: 'translateZ(10px)' }}>
-                {stat.label}
-              </p>
+
+              {/* Vertical divider between stats on desktop */}
+              {idx < STATS.length - 1 && (
+                <div
+                  className="hidden md:block"
+                  style={{
+                    width: 1,
+                    height: 48,
+                    alignSelf: 'center',
+                    background: 'linear-gradient(to bottom, transparent, rgba(17,76,90,0.2), transparent)',
+                  }}
+                />
+              )}
             </div>
           ))}
         </div>

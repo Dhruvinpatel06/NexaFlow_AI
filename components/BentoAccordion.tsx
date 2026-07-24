@@ -37,10 +37,17 @@ export default function BentoAccordion() {
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  // Fix #14: reveal on scroll
+  // Reveal on scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
-      (entries) => { entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add('visible'); }); },
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            e.target.classList.add('in-view');
+          }
+        });
+      },
       { threshold: 0.1 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -87,20 +94,19 @@ export default function BentoAccordion() {
         backgroundSize: 'auto, auto, 24px 24px',
       }}
     >
-      <div ref={sectionRef} className="max-w-7xl mx-auto reveal">
+      <div ref={sectionRef} className="max-w-7xl mx-auto reveal reveal-up">
         <div className="text-center mb-16">
-          {/* Eyebrow Label Upgrade */}
           <div className="flex justify-center mb-4">
-            <span 
-              style={{ 
-                display: 'inline-block', 
-                paddingBottom: '4px', 
-                borderBottom: '3px solid var(--primary)', 
-                fontSize: '0.65rem', 
-                fontWeight: 700, 
-                letterSpacing: '0.15em', 
-                textTransform: 'uppercase', 
-                color: 'var(--dark)' 
+            <span
+              style={{
+                display: 'inline-block',
+                paddingBottom: '4px',
+                borderBottom: '3px solid var(--primary)',
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: 'var(--dark)',
               }}
             >
               Platform Capabilities
@@ -109,10 +115,12 @@ export default function BentoAccordion() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'var(--text)', fontFamily: 'var(--font-mono)' }}>
             Powerful <span className="gradient-text">Features</span>
           </h2>
-          <p className="text-lg" style={{ color: 'var(--muted)', opacity: 0.7 }}>Everything you need to automate and scale your business</p>
+          <p className="text-lg" style={{ color: 'var(--muted)', opacity: 0.7 }}>
+            Everything you need to automate and scale your business
+          </p>
         </div>
 
-        {/* Desktop Bento Grid */}
+        {/* Desktop Bento Grid with staggered reveal and spotlight */}
         <div className="hidden md:grid grid-cols-3 gap-6 auto-rows-max">
           {FEATURES.map((feature, idx) => {
             const Icon = feature.icon;
@@ -121,101 +129,168 @@ export default function BentoAccordion() {
             return (
               <div
                 key={idx}
-                className={`cursor-pointer ${isSpanned ? 'col-span-2 row-span-2' : ''} card-depth spotlight-card`}
+                className={`cursor-pointer ${isSpanned ? 'col-span-2 row-span-2' : ''} card-depth spotlight-card bento-card bento-card-delay-${idx}`}
                 tabIndex={0}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActiveIndex(isActive ? null : idx); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveIndex(isActive ? null : idx);
+                  }
+                }}
                 style={{
-                  // Glassmorphism base + Active gradient overlay
                   background: isActive
-                    ? 'linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,200,1,0.04))'
-                    : 'rgba(255,255,255,0.75)',
+                    ? 'radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,200,1,0.08), transparent 70%), linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,200,1,0.04))'
+                    : 'radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,200,1,0.06), transparent 70%), rgba(255,255,255,0.75)',
                   backdropFilter: 'blur(12px)',
                   WebkitBackdropFilter: 'blur(12px)',
-                  border: isActive 
-                    ? '1px solid rgba(255,200,1,0.6)' 
-                     : '1px solid rgba(255,200,1,0.15)',
+                  border: isActive ? '1px solid rgba(255,200,1,0.6)' : '1px solid rgba(255,200,1,0.15)',
                   boxShadow: isActive
                     ? '0 1px 0 rgba(255,255,255,0.8) inset, 0 8px 32px rgba(255,200,1,0.15), 0 4px 12px rgba(0,0,0,0.08)'
                     : '0 1px 0 rgba(255,255,255,0.8) inset, 0 4px 16px rgba(17,76,90,0.08), 0 1px 3px rgba(0,0,0,0.04)',
-                  borderRadius: '24px', 
+                  borderRadius: '24px',
                   padding: '2rem',
-                  position: 'relative', 
+                  position: 'relative',
                   overflow: 'hidden',
                   minHeight: isSpanned ? '350px' : 'auto',
-                  transformStyle: 'preserve-3d', 
+                  transformStyle: 'preserve-3d',
                   willChange: 'transform',
                   transition: 'transform 100ms ease-out, border-color 220ms ease-out, background-color 220ms ease-out, box-shadow 220ms ease-out',
                 }}
-                onMouseEnter={() => { hoveredIndexRef.current = idx; setActiveIndex(idx); }}
+                onMouseEnter={() => {
+                  hoveredIndexRef.current = idx;
+                  setActiveIndex(idx);
+                }}
                 onMouseMove={handleMouseMoveCard}
-                onMouseLeave={(e) => { hoveredIndexRef.current = null; setActiveIndex(null); handleMouseLeaveCard(e); }}
+                onMouseLeave={(e) => {
+                  hoveredIndexRef.current = null;
+                  setActiveIndex(null);
+                  handleMouseLeaveCard(e);
+                }}
               >
                 {/* Top shimmer line */}
-                <div style={{ position: 'absolute', top: 0, left: '10%', right: '10%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(255,200,1,0.6), transparent)', opacity: isActive ? 1 : 0.3, transition: 'opacity 220ms ease-out', borderRadius: '9999px' }} />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: '10%',
+                    right: '10%',
+                    height: '1px',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,200,1,0.6), transparent)',
+                    opacity: isActive ? 1 : 0.3,
+                    transition: 'opacity 220ms ease-out',
+                    borderRadius: '9999px',
+                  }}
+                />
                 <div className="flex items-start gap-4 mb-3">
-                  {/* Issue 4D: Icon with translateZ(24px) for 3D float */}
+                  {/* Upgraded Icon Container */}
                   <div
-                    className="flex items-center justify-center flex-shrink-0 animate-fade-in"
+                    className="flex items-center justify-center flex-shrink-0"
                     style={{
-                      width: '56px', height: '56px', borderRadius: '16px',
-                      background: 'linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)',
-                      border: '1px solid rgba(255,200,1,0.3)',
-                      boxShadow: '0 4px 16px rgba(255,200,1,0.2), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.05)',
+                      width: 48,
+                      height: 48,
+                      borderRadius: 12,
+                      background: 'linear-gradient(135deg, rgba(255,200,1,0.15), rgba(255,154,50,0.08))',
+                      border: isActive ? '1px solid rgba(255,200,1,0.6)' : '1px solid rgba(255,200,1,0.25)',
+                      boxShadow: isActive ? '0 0 12px rgba(255,200,1,0.2)' : 'none',
                       transform: isActive ? 'scale(1.08) rotateZ(4deg) translateZ(24px)' : 'scale(1) rotateZ(0deg) translateZ(24px)',
-                      transition: 'transform 200ms ease-out, box-shadow 200ms ease-out',
+                      transition: 'transform 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out',
                     }}
                   >
-                    <Icon color={isActive ? feature.color : 'var(--dark)'} size={26} />
+                    <Icon color={isActive ? feature.color : 'var(--dark)'} size={24} />
                   </div>
                   <div>
                     <h3
                       className="text-xl font-bold"
-                      style={isActive ? {
-                        fontFamily: 'var(--font-mono)',
-                        background: 'linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%)',
-                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-                        fontSize: '1.2rem', fontWeight: 700,
-                      } : { color: 'var(--text)', fontFamily: 'var(--font-mono)', fontSize: '1.2rem', fontWeight: 700 }}
+                      style={
+                        isActive
+                          ? {
+                              fontFamily: 'var(--font-mono)',
+                              background: 'linear-gradient(135deg, var(--dark) 0%, var(--primary) 100%)',
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                              backgroundClip: 'text',
+                              fontSize: '1.2rem',
+                              fontWeight: 700,
+                            }
+                          : { color: 'var(--text)', fontFamily: 'var(--font-mono)', fontSize: '1.2rem', fontWeight: 700 }
+                      }
                     >
                       {feature.title}
                     </h3>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: '9999px', fontSize: '0.65rem', fontWeight: 500, fontFamily: 'var(--font-sans)', background: 'rgba(255,200,1,0.1)', border: '1px solid rgba(255,200,1,0.25)', color: 'var(--dark)', marginTop: '4px' }}>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '2px 8px',
+                        borderRadius: '9999px',
+                        fontSize: '0.65rem',
+                        fontWeight: 500,
+                        fontFamily: 'var(--font-sans)',
+                        background: 'rgba(255,200,1,0.1)',
+                        border: '1px solid rgba(255,200,1,0.25)',
+                        color: 'var(--dark)',
+                        marginTop: '4px',
+                      }}
+                    >
                       {feature.tag}
                     </span>
                   </div>
                 </div>
-                {/* Body description opacity 0.7 */}
-                <p className="text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.7)' }}>{feature.description}</p>
-                
-                {/* Large Data Insights card (idx===2): 3D bar chart & Issue 4F: Drawing SVG line */}
+
+                <p className="text-sm leading-relaxed" style={{ color: 'rgba(17,76,90,0.7)' }}>
+                  {feature.description}
+                </p>
+
+                {/* Smart Configuration (idx === 3): Mini Toggle Mockup */}
+                {idx === 3 && (
+                  <div className="flex items-center gap-2 mt-4 px-3 py-1.5 rounded-full bg-[rgba(17,76,90,0.06)] border border-[rgba(17,76,90,0.12)] w-fit relative overflow-hidden">
+                    <div className="flex items-center gap-5 text-xs font-mono relative z-10 px-1">
+                      <span style={{ animation: 'mini-toggle-text1 4s ease-in-out infinite' }}>No-code ●</span>
+                      <span style={{ animation: 'mini-toggle-text2 4s ease-in-out infinite' }}>Pro-mode ●</span>
+                    </div>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 2,
+                        bottom: 2,
+                        left: 2,
+                        width: 72,
+                        borderRadius: 999,
+                        background: 'rgba(255,200,1,0.25)',
+                        border: '1px solid var(--primary)',
+                        animation: 'mini-toggle-slide 4s ease-in-out infinite',
+                        zIndex: 0,
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Large Data Insights card (idx===2) */}
                 {isSpanned && (
-                  <div 
-                    className="grid grid-cols-3 gap-6 mt-6 items-center"
-                    style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }}
-                  >
-                    {/* Left Column: Stat Badges (1/3 width) */}
+                  <div className="grid grid-cols-3 gap-6 mt-6 items-center" style={{ transform: 'translateZ(20px)', transformStyle: 'preserve-3d' }}>
                     <div className="col-span-1 flex flex-col gap-3">
                       <div className="glass-card" style={{ border: '1px solid rgba(255,200,1,0.25)', borderRadius: '12px', padding: '10px 14px', background: 'rgba(255,255,255,0.75)', transform: 'translateZ(25px)' }}>
                         <p style={{ fontSize: '0.55rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, fontWeight: 700 }}>Accuracy Rate</p>
-                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>99.98% <span style={{ fontSize: '0.65rem', color: '#22c55e' }}>↑</span></p>
+                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>
+                          99.98% <span style={{ fontSize: '0.65rem', color: '#22c55e' }}>↑</span>
+                        </p>
                       </div>
-                      
+
                       <div className="glass-card" style={{ border: '1px solid rgba(17,76,90,0.12)', borderRadius: '12px', padding: '10px 14px', background: 'rgba(255,255,255,0.75)', transform: 'translateZ(25px)' }}>
                         <p style={{ fontSize: '0.55rem', color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0, fontWeight: 700 }}>Latency Speed</p>
-                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>14.2ms <span style={{ fontSize: '0.65rem', color: 'var(--primary)' }}>⚡</span></p>
+                        <p style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--dark)', fontFamily: 'var(--font-mono)', margin: '2px 0 0 0' }}>
+                          14.2ms <span style={{ fontSize: '0.65rem', color: 'var(--primary)' }}>⚡</span>
+                        </p>
                       </div>
                     </div>
 
-                    {/* Right Column: Chart & SVG (2/3 width) */}
                     <div className="col-span-2 relative w-full h-[130px] rounded-xl p-4 overflow-hidden border border-dashed border-[rgba(17,76,90,0.15)] bg-[rgba(255,255,255,0.3)]" style={{ transformStyle: 'preserve-3d', transform: 'translateZ(25px)' }}>
-                      {/* Grid overlay */}
                       <svg className="absolute inset-0 w-full h-full" style={{ opacity: 0.1, pointerEvents: 'none' }}>
                         <line x1="0" y1="30" x2="100%" y2="30" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
                         <line x1="0" y1="65" x2="100%" y2="65" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
                         <line x1="0" y1="100" x2="100%" y2="100%" stroke="var(--dark)" strokeWidth="0.5" strokeDasharray="3,3" />
                       </svg>
 
-                      {/* Line chart SVG */}
                       <svg className="absolute inset-0 w-full h-full" viewBox="0 0 300 130" preserveAspectRatio="none" style={{ pointerEvents: 'none', transform: 'translateZ(30px)' }}>
                         <defs>
                           <linearGradient id="primaryChartFill" x1="0" y1="0" x2="0" y2="1">
@@ -223,20 +298,12 @@ export default function BentoAccordion() {
                             <stop offset="100%" stopColor="var(--primary)" stopOpacity="0" />
                           </linearGradient>
                         </defs>
-                        
-                        {/* Shimmer gradient fill */}
-                        <path 
-                          d="M0,130 L0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30 L300,130 Z" 
-                          fill="url(#primaryChartFill)" 
-                          style={{ opacity: isActive ? 1 : 0.5, transition: 'opacity 300ms' }}
-                        />
-                        
-                        {/* Main line */}
-                        <path 
-                          d="M0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30" 
-                          fill="none" 
-                          stroke="var(--primary)" 
-                          strokeWidth="2.5" 
+                        <path d="M0,130 L0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30 L300,130 Z" fill="url(#primaryChartFill)" style={{ opacity: isActive ? 1 : 0.5, transition: 'opacity 300ms' }} />
+                        <path
+                          d="M0,90 C40,80 80,110 120,60 C160,20 200,90 240,40 L300,30"
+                          fill="none"
+                          stroke="var(--primary)"
+                          strokeWidth="2.5"
                           strokeLinecap="round"
                           style={{
                             strokeDasharray: '400',
@@ -244,8 +311,6 @@ export default function BentoAccordion() {
                             transition: 'stroke-dashoffset 1.5s ease-out',
                           }}
                         />
-
-                        {/* Node circle */}
                         {isActive && (
                           <circle cx="160" cy="20" r="4" fill="var(--warm)" style={{ filter: 'drop-shadow(0 0 6px var(--warm))' }}>
                             <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
@@ -253,17 +318,9 @@ export default function BentoAccordion() {
                         )}
                       </svg>
 
-                      {/* Small Live stats overlay */}
                       <div className="absolute top-2 left-2 flex items-center gap-1.5 px-2 py-1 rounded bg-[rgba(255,255,255,0.9)] border border-[rgba(255,200,1,0.25)] text-[0.55rem] font-bold text-[var(--dark)]" style={{ transform: 'translateZ(35px)' }}>
                         <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e] animate-pulse" />
                         ANALYTICS: LIVE
-                      </div>
-
-                      {/* Small bar indicators in corner */}
-                      <div className="absolute bottom-2 right-2 flex items-end gap-1" style={{ opacity: isActive ? 0.85 : 0.4, transition: 'opacity 300ms', transform: 'translateZ(30px)' }}>
-                        {[30, 45, 60, 40].map((barHeight, idx) => (
-                          <div key={idx} style={{ width: '4px', height: `${barHeight * 0.4}px`, backgroundColor: idx % 2 === 0 ? 'var(--primary)' : 'var(--warm)', borderRadius: '1px' }} />
-                        ))}
                       </div>
                     </div>
                   </div>
@@ -307,16 +364,24 @@ export default function BentoAccordion() {
                   boxShadow: isActive ? '0 0 0 1px var(--primary), 0 20px 40px rgba(255,200,1,0.12)' : '0 1px 3px rgba(0,0,0,0.04)',
                 }}
               >
-                <button
-                  onClick={() => setActiveIndex(isActive ? null : idx)}
-                  className="w-full px-6 py-4 flex items-center gap-4 justify-between"
-                  style={{ backgroundColor: 'transparent' }}
-                >
+                <button onClick={() => setActiveIndex(isActive ? null : idx)} className="w-full px-6 py-4 flex items-center gap-4 justify-between" style={{ backgroundColor: 'transparent' }}>
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center justify-center flex-shrink-0" style={{ width: '56px', height: '56px', borderRadius: '16px', background: 'linear-gradient(145deg, rgba(255,200,1,0.22) 0%, rgba(255,154,50,0.12) 100%)', border: '1px solid rgba(255,200,1,0.3)', boxShadow: '0 4px 16px rgba(255,200,1,0.2), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -1px 0 rgba(0,0,0,0.05)', transform: isActive ? 'scale(1.08) rotateZ(4deg)' : 'scale(1) rotateZ(0deg)', transition: 'transform 200ms ease-out, box-shadow 200ms ease-out' }}>
-                      <Icon color={isActive ? feature.color : 'var(--dark)'} size={26} />
+                    <div
+                      className="flex items-center justify-center flex-shrink-0"
+                      style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: 12,
+                        background: 'linear-gradient(135deg, rgba(255,200,1,0.15), rgba(255,154,50,0.08))',
+                        border: isActive ? '1px solid rgba(255,200,1,0.6)' : '1px solid rgba(255,200,1,0.25)',
+                        boxShadow: isActive ? '0 0 12px rgba(255,200,1,0.2)' : 'none',
+                      }}
+                    >
+                      <Icon color={isActive ? feature.color : 'var(--dark)'} size={24} />
                     </div>
-                    <h3 className="text-lg font-bold text-left" style={{ color: isActive ? feature.color : 'var(--text)', fontFamily: 'var(--font-mono)' }}>{feature.title}</h3>
+                    <h3 className="text-lg font-bold text-left" style={{ color: isActive ? feature.color : 'var(--text)', fontFamily: 'var(--font-mono)' }}>
+                      {feature.title}
+                    </h3>
                   </div>
                   {isActive ? <ChevronUpSolid color={feature.color} size={20} /> : <ChevronDown color="var(--muted)" size={20} />}
                 </button>
