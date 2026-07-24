@@ -61,8 +61,19 @@ export default function Workflow3D() {
             </button>
           </div>
 
-          {/* 3D Animated Pipeline Graphics */}
+          {/* 3D Animated Pipeline Graphics with Ambient Packet Motion */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center py-6 relative">
+            {/* Ambient Data Packet Connection Line */}
+            <div className="hidden md:block absolute top-1/2 left-[25%] right-[25%] h-0.5 bg-gradient-to-r from-[#00F0FF] via-[#A855F7] to-[#10B981] opacity-30 -translate-y-1/2 pointer-events-none z-0">
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#00F0FF] shadow-[0_0_12px_#00F0FF]"
+                style={{ animation: 'packet-travel 3s ease-in-out infinite' }}
+              />
+              <div
+                className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#A855F7] shadow-[0_0_12px_#A855F7]"
+                style={{ animation: 'packet-travel 3s ease-in-out infinite 1.5s' }}
+              />
+            </div>
             {/* Input Node Card */}
             <div
               className={`p-6 rounded-xl border transition-all duration-500 cursor-pointer ${

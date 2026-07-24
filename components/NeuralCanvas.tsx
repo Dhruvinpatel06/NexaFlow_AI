@@ -72,11 +72,11 @@ export default function NeuralCanvas() {
       time += 0.015;
       ctx.clearRect(0, 0, width, height);
 
-      // Draw particles & update
+      // Draw particles & update with organic ambient drift
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
-        p.x += p.vx;
-        p.y += p.vy;
+        p.x += p.vx + Math.sin(time + i) * 0.2;
+        p.y += p.vy + Math.cos(time + i) * 0.2;
 
         if (p.x < 0) p.x = width;
         if (p.x > width) p.x = 0;
