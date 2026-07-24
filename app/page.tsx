@@ -12,15 +12,17 @@ import Footer from '@/components/Footer';
 import ScrollProgress from '@/components/ScrollProgress';
 import ScrollToTop from '@/components/ScrollToTop';
 import SpotlightCursor from '@/components/SpotlightCursor';
+import SceneCamera from '@/components/SceneCamera';
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#030712] text-slate-100 relative overflow-hidden">
       <SpotlightCursor />
+      <SceneCamera />
       <ScrollProgress />
       <Navbar />
       
-      {/* 12 Seamless Sections Flow */}
+      {/* 8-Scene Camera Travel Journey Flow */}
       <Hero />
       <InteractiveAIDemo />
       <BentoAccordion />
