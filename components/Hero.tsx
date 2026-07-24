@@ -76,8 +76,8 @@ export default function Hero() {
     ];
     elements.forEach(({ ref, delay }) => {
       if (ref.current) {
-        ref.current.style.animation = `fade-up 500ms ease-out ${delay}ms forwards`;
         ref.current.style.opacity = '0';
+        ref.current.style.animation = `fade-up 600ms ease-out ${delay}ms forwards`;
       }
     });
   }, []);

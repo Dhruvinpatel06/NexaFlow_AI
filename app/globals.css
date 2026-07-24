@@ -221,6 +221,34 @@ h3 { font-size: 1.25rem; }
   100% { transform: scale(1); opacity: 1; }
 }
 
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 600ms ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 600ms ease-out forwards;
+}
+
 @keyframes spin-border {
   from { --border-angle: 0deg; }
   to   { --border-angle: 360deg; }
